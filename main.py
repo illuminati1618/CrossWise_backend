@@ -36,6 +36,10 @@ from api.post_met import post_met_api
 from api.poll_met import poll_met_api
 from api.health import health_api
 from api.help import help_api
+from api.accident import accident_api
+from api.cancer import cancer_api
+from api.estonia import estonia_api
+from api.titanic import titanic_api
 
 from api.leaderboard import leaderboard_api
 
@@ -59,6 +63,10 @@ from model.help_request import HelpRequest, initHelpRequests
 from model.topusers import TopUser
 from model.topinterests import TopInterest, initTopInterests
 from model.usettings import Settings  # Import the Settings model
+from model.accident import AccidentModel
+from model.cancer import CancerModel
+from model.estonia import EstoniaModel
+from model.titanic import TitanicModel
 # server only Views
 
 # register URIs for api endpoints
@@ -85,6 +93,10 @@ app.register_blueprint(post_met_api)
 app.register_blueprint(poll_met_api)
 app.register_blueprint(help_api)
 app.register_blueprint(health_api)
+app.register_blueprint(accident_api)
+app.register_blueprint(cancer_api)
+app.register_blueprint(estonia_api)
+app.register_blueprint(titanic_api)
 
 # Tell Flask-Login the view function name of your login route
 login_manager.login_view = "login"
