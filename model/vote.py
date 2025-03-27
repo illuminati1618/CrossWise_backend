@@ -59,6 +59,20 @@ class Vote(db.Model):
             "user_id": self._user_id,
             "post_id": self._post_id
         }
+    
+    def update(self, vote_type):
+        """
+        Update the vote type and commit the transaction.
+
+        Args:
+            vote_type (str): Type of the vote, either "upvote" or "downvote".
+        """
+        try:
+            self._vote_type = vote_type
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            raise
 
     def delete(self):
         """
@@ -70,6 +84,39 @@ class Vote(db.Model):
         except Exception as e:
             db.session.rollback()
             raise e
+        
+    @staticmethod
+    def restore(data):
+        """
+        Restore votes from a list of dictionaries, ensuring no duplicates are created.
+
+        Args:
+            data (list): List of dictionaries containing vote data.
+
+        Returns:
+            list: List of restored Vote objects.
+        """
+        restored_classes = {}
+
+        for vote_data in data:
+            existing_vote = Vote.query.filter_by(
+                _user_id=vote_data['user_id'], _post_id=vote_data['post_id']
+            ).first()
+
+            if existing_vote:
+                # If vote exists, update it if needed (optional)
+                if existing_vote._vote_type != vote_data['vote_type']:
+                    existing_vote.update(vote_data['vote_type'])
+                restored_classes[vote_data['id']] = existing_vote
+            else:
+                # If vote doesn't exist, create a new one
+                vote = Vote(vote_data['vote_type'], vote_data['user_id'], vote_data['post_id'])
+                vote.create()
+                restored_classes[vote_data['id']] = vote
+
+        return restored_classes
+
+
 
 def initVotes():
     """
@@ -81,8 +128,10 @@ def initVotes():
 
         # Optionally, add some test data (replace with actual values as needed)
         votes = [
-            Vote(vote_type='upvote', user_id=1, post_id=1),
-            Vote(vote_type='downvote', user_id=2, post_id=1),
+            Vote(vote_type='upvote', user_id=1, post_id=5),
+            Vote(vote_type='downvote', user_id=2, post_id=5),
+            Vote(vote_type='downvote', user_id=3, post_id=7),
+            Vote(vote_type='downvote', user_id=7, post_id=6),
         ]
         
         for vote in votes:

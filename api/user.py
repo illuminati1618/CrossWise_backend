@@ -90,8 +90,12 @@ class UserAPI:
             if uid is None or len(uid) < 2:
                 return {'message': 'User ID is missing, or is less than 2 characters'}, 400
 
+            followers = body.get('followers', '')
+            if not isinstance(followers, str):
+                return {'message': 'Followers must be a string'}, 400
+
             # Setup minimal USER OBJECT
-            user_obj = User(name=name, uid=uid)
+            user_obj = User(name=name, uid=uid, followers=followers)
 
             # Add user to database
             user = user_obj.create(body)  # pass the body elements to be saved in the database
@@ -128,6 +132,18 @@ class UserAPI:
                         return {'message': f'User {uid} not found'}, 404
             else:
                 user = current_user  # Non-admin can only update themselves
+
+            # Check if followers exist before updating
+            if 'followers' in body:
+                new_followers = body['followers'].split(',')
+                valid_followers = []
+                for follower in new_followers:
+                    follower = follower.strip()
+                    if User.query.filter_by(_uid=follower).first():
+                        valid_followers.append(follower)
+                    else:
+                        return {'message': f'Follower {follower} does not exist'}, 400
+                body['followers'] = ', '.join(valid_followers)
 
             # Update the user object with the new data
             user.update(body)
@@ -198,7 +214,6 @@ class UserAPI:
                 )
                 return resp
             except Exception as e:
-                print(e)
                 return {
                     "error": "Something went wrong",
                     "message": str(e)
@@ -242,9 +257,59 @@ class UserAPI:
             current_user = g.current_user
             ''' Return the current user as a json object '''
             return jsonify(current_user.read())
+        
+    class _Followers(Resource):
+        @token_required()
+        def get(self):
+            """
+            Return the followers of the authenticated user as a JSON object.
+            """
+            current_user = g.current_user
+            followers = current_user.followers
+            if not followers:
+                return {'message': 'No followers found for this user'}, 404
+            return jsonify(followers)
+
+    class _Following(Resource):
+        @token_required()
+        def get(self):
+            """
+            Return the users that the authenticated user is following as a JSON object.
+            """
+            current_user = g.current_user
+            following = User.query.filter(User._followers.contains(current_user.uid)).all()
+            following_list = [user.uid for user in following]
+            if not following_list:
+                return {'message': 'No users found that you are following'}, 404
+            return jsonify(following_list)
+
+    class _MutualConnections(Resource):
+        @token_required()
+        def get(self):
+            """
+            Return the mutual connections of the authenticated user as a JSON object.
+            """
+            current_user = g.current_user
+            followers = [f.strip() for f in current_user.followers.split(',')] if current_user.followers else []
+            mutual_connections = {}
+
+            for follower_uid in followers:
+                follower = User.query.filter_by(_uid=follower_uid).first()
+                if follower and follower.followers:
+                    follower_followers = [f.strip() for f in follower.followers.split(',')]
+                    for mutual_follower_uid in follower_followers:
+                        if mutual_follower_uid in followers and mutual_follower_uid != current_user.uid:
+                            if follower_uid not in mutual_connections:
+                                mutual_connections[follower_uid] = []
+                            mutual_connections[follower_uid].append(mutual_follower_uid)
+
+            return jsonify(mutual_connections)
 
 # Register the API resources with the Blueprint
 api.add_resource(UserAPI._ID, '/id')
 api.add_resource(UserAPI._BULK_CRUD, '/users')
 api.add_resource(UserAPI._CRUD, '/user')
 api.add_resource(UserAPI._Security, '/authenticate')
+api.add_resource(UserAPI._Followers, '/followers')
+api.add_resource(UserAPI._Following, '/following')
+api.add_resource(UserAPI._MutualConnections, '/mutual_connections')

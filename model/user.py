@@ -58,11 +58,14 @@ class User(db.Model, UserMixin):
     _password = db.Column(db.String(255), unique=False, nullable=False)
     _role = db.Column(db.String(20), default="User", nullable=False)
     _pfp = db.Column(db.String(255), unique=False, nullable=True)
-   
+    _car = db.Column(db.String(255), unique=False, nullable=True)
+    _interests = db.Column(db.String(255), unique=False, nullable=True)  # New field added here
+    _followers = db.Column(db.String(255), unique=False, nullable=True)  # New field added here
+
     posts = db.relationship('Post', backref='author', lazy=True)
                                  
     
-    def __init__(self, name, uid, password="", role="User", pfp='', email='?'):
+    def __init__(self, name, uid, password="", role="User", pfp='', car='', email='?', interests='', followers=''):
         """
         Constructor, 1st step in object creation.
         
@@ -72,6 +75,8 @@ class User(db.Model, UserMixin):
             password (str): The password for the user.
             role (str): The role of the user within the application. Defaults to "User".
             pfp (str): The path to the user's profile picture. Defaults to an empty string.
+            interests (str): The user's interests. Defaults to an empty string.
+            followers (str): The user's followers. Defaults to an empty string.
         """
         self._name = name
         self._uid = uid
@@ -79,8 +84,57 @@ class User(db.Model, UserMixin):
         self.set_password(password)
         self._role = role
         self._pfp = pfp
+        self._car = car
+        self._interests = interests
+        self._followers = followers
 
-    # UserMixin/Flask-Login requires a get_id method to return the id as a string
+    @property
+    def interests(self):
+        """
+        Gets the user's interests.
+        
+        Returns:
+            str: The user's interests. Seperatred by commas.
+        """
+        return self._interests
+
+    @property
+    def followers(self):
+        """
+        Gets the user's followers.
+        
+        Returns:
+            str: The user's followers. Seperatred by commas.
+        """
+        return self._followers
+
+    @interests.setter
+    def interests(self, interests):
+        """
+        Sets the user's interests.
+        
+        Args:
+            interests (str): The new interests for the user.
+        """
+        if isinstance(interests, str):
+            self._interests = interests
+        else:
+            self._interests = ""
+
+    @followers.setter
+    def followers(self, followers):
+        """
+        Sets the user's followers.
+        
+        Args:
+            followers (str): The new followers for the user.
+        """
+        if isinstance(followers, str):
+            self._followers = followers
+        else:
+            self._followers = ""
+
+
     def get_id(self):
         """
         Returns the user's ID as a string.
@@ -295,6 +349,12 @@ class User(db.Model, UserMixin):
         """
         self._pfp = pfp
 
+    @property
+    def car(self):
+        return self._car
+    @car.setter
+    def car(self, car):
+        self._car = car
     def create(self, inputs=None):
         """
         Adds a new record to the table and commits the transaction.
@@ -329,6 +389,9 @@ class User(db.Model, UserMixin):
             "email": self.email,
             "role": self._role,
             "pfp": self._pfp,
+            "car": self._car,
+            "interests": self._interests,  # Include interests in the dictionary
+            "followers": self._followers  # Include followers in the dictionary
         }
         return data
         
@@ -349,6 +412,8 @@ class User(db.Model, UserMixin):
         uid = inputs.get("uid", "")
         password = inputs.get("password", "")
         pfp = inputs.get("pfp", None)
+        interests = inputs.get("interests", None)
+        followers = inputs.get("followers", None)
 
         # Update table with new data
         if name:
@@ -359,6 +424,10 @@ class User(db.Model, UserMixin):
             self.set_password(password)
         if pfp is not None:
             self.pfp = pfp
+        if interests is not None:
+            self.interests = interests
+        if followers is not None:
+            self.followers = followers
 
         # Check this on each update
         self.set_email()
@@ -408,6 +477,32 @@ class User(db.Model, UserMixin):
         Deletes the user's profile picture from the user record.
         """
         self.pfp = None
+        db.session.commit()
+        
+    def save_car(self, image_data, filename):
+        """
+        Saves the user's car picture.
+        
+        Args:
+            image_data (bytes): The image data of the car picture.
+            filename (str): The filename of the car picture.
+        """
+        try:
+            user_dir = os.path.join(app.config['UPLOAD_FOLDER'], self.uid)
+            if not os.path.exists(user_dir):
+                os.makedirs(user_dir)
+            file_path = os.path.join(user_dir, filename)
+            with open(file_path, 'wb') as img_file:
+                img_file.write(image_data)
+            self.update({"car": filename})
+        except Exception as e:
+            raise e
+        
+    def delete_car(self):
+        """
+        Deletes the user's profile picture from the user record.
+        """
+        self.car = None
         db.session.commit()
         
     def set_uid(self, new_uid=None):
@@ -470,10 +565,132 @@ def initUsers():
         db.create_all()
         """Tester data for table"""
         
-        u1 = User(name='Thomas Edison', uid=app.config['ADMIN_USER'], password=app.config['ADMIN_PASSWORD'], pfp='toby.png', role="Admin")
-        u2 = User(name='Grace Hopper', uid=app.config['DEFAULT_USER'], password=app.config['DEFAULT_PASSWORD'], pfp='hop.png')
-        u3 = User(name='Nicholas Tesla', uid='niko', password='123niko', pfp='niko.png' )
-        users = [u1, u2, u3]
+        # Initial User List
+        users = [
+            User(
+                name='Thomas Edison',
+                uid=app.config['ADMIN_USER'],
+                password=app.config['ADMIN_PASSWORD'],
+                pfp='toby.png',
+                car='toby_car.png',
+                role="Admin",
+                interests="Inventing, Reading, Physics",
+                followers="niko, bobby"
+            ),
+            User(
+                name='Grace Hopper',
+                uid=app.config['DEFAULT_USER'],
+                password=app.config['DEFAULT_PASSWORD'],
+                pfp='hop.png',
+                interests="Inventing, Reading, Physics",
+                followers="niko"
+            ),
+            User(
+                name='Nicholas Tesla',
+                uid='niko',
+                password='123niko',
+                pfp='niko.png',
+                interests="Electrical Engineering, Innovation, Nature, Inventing"
+            ),
+            User(
+                name='Bobby Bapat',
+                uid='bobby',
+                password='1111',
+                followers="niko"
+            ),
+            User(
+                name='Random Chatroom',
+                uid=app.config['ADMIN_USER'],
+                password='password',
+                interests="Soccer, Physics",
+                followers="bobby"
+            ),
+            User(
+                name='Albert Einstein',
+                uid='einstein',
+                password='e=mc2',
+                interests="Physics, Mathematics, Nature"
+            ),
+            User(
+                name='Marie Curie',
+                uid='curie',
+                password='radium123',
+                interests="Chemistry, Physics, Research"
+            ),
+            User(
+                name='Alan Turing',
+                uid='turing',
+                password='enigma1942',
+                interests="Mathematics, Programming, Cryptography"
+            ),
+            User(
+                name='Ada Lovelace',
+                uid='ada',
+                password='lovelace99',
+                interests="Mathematics, Programming, Algorithms"
+            ),
+            User(
+                name='Galileo Galilei',
+                uid='galileo',
+                password='stars123',
+                interests="Astronomy, Physics, Invention"
+            ),
+            User(
+                name='Leonardo Da Vinci',
+                uid='davinci',
+                password='monaLisa',
+                interests="Art, Innovation, Anatomy, Nature"
+            ),
+            User(
+                name='Isaac Newton',
+                uid='newton',
+                password='applefall',
+                interests="Physics, Mathematics, Nature, Inventing"
+            ),
+            User(
+                name='Katherine Johnson',
+                uid='kjohnson',
+                password='apollo11',
+                interests="Mathematics, Programming, Aerospace"
+            ),
+            User(
+                name='Charles Darwin',
+                uid='darwin',
+                password='evolution123',
+                interests="Nature, Biology, Research, Writing"
+            ),
+            User(
+                name='Carl Sagan',
+                uid='sagan',
+                password='cosmos42',
+                interests="Astronomy, Physics, Writing"
+            ),
+            User(
+                name='Rosalind Franklin',
+                uid='rosalind',
+                password='dna1952',
+                interests="Chemistry, Biology, Research"
+            ),
+            User(
+                name='Alexander Graham Bell',
+                uid='bell',
+                password='phone1876',
+                interests="Invention, Communication, Physics"
+            ),
+            User(
+                name='John von Neumann',
+                uid='neumann',
+                password='gameTheory1',
+                interests="Mathematics, Programming, Cryptography, Algorithms"
+            ),
+            User(
+                name='Rachel Carson',
+                uid='carson',
+                password='silentSpring',
+                interests="Nature, Writing, Environmental Science"
+            )
+        ]
+
         
         for user in users:
             try:

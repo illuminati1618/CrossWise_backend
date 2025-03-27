@@ -19,6 +19,11 @@ backup/
 
 # instance data, databases
 instance/volumes/
+instance/volumes/*
 instance/data.json
 instance/data.json.*.bak
-instance/uploads/
+
+# Ignore specific database files
+instance/volumes/user_management.db
+instance/volumes/user_management_bak.db
+

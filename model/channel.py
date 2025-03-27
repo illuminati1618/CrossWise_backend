@@ -160,72 +160,19 @@ def initChannels():
             Channel(name='Help Desk', group_id=support.id)
         ]
         
-        # Gas Car Channels 
-        sedan = Group.query.filter_by(_name='Sedan').first() 
-        truck = Group.query.filter_by(_name='Truck').first() 
-        muscle_car = Group.query.filter_by(_name='Muscle Car').first()
-        sports_car = Group.query.filter_by(_name='Sports Car').first()
-        gas_car_channels = [
-            Channel(name='2025 Hyundai Elantra', group_id=sedan.id),
-            Channel(name='Ford F150', group_id=truck.id),
-            Channel(name='Chevrolet Camero', group_id=muscle_car.id),
-            Channel(name='Porche 911', group_id=sports_car.id),
-        ]
-        
-        # Electric Car channels below:
-        DNHSCafe = Group.query.filter_by(_name='Study Room').first()
-        chess_forum = Group.query.filter_by(_name='Chess Forum').first()
-        Underground_Music = Group.query.filter_by(_name='Underground Music').first()
-        hybrid_car_channels = [
-            Channel(name='Math', group_id=DNHSCafe.id),
-            Channel(name='Chemistry', group_id=DNHSCafe.id),
-            Channel(name='Biology', group_id=DNHSCafe.id),
-            Channel(name='English', group_id=DNHSCafe.id),
-            Channel(name='Coding', group_id=DNHSCafe.id),
-            Channel(name='History', group_id=DNHSCafe.id),
-            Channel(name='General', group_id=chess_forum.id),
-            Channel(name='Chess Tips', group_id=chess_forum.id),
-            Channel(name='Game Updates', group_id=chess_forum.id),
-            Channel(name='Artists', group_id=Underground_Music.id),
-            Channel(name='Songs', group_id=Underground_Music.id),
-            Channel(name='Genres', group_id=Underground_Music.id),
-        ]
 
-        # Hybrid channels below:
-        internet_debates = Group.query.filter_by(_name='Internet Debates').first() 
-        calico_vote = Group.query.filter_by(_name='Calico Vote').first() 
-        dnero_store = Group.query.filter_by(_name='Dnero Store').first()
-        beverage_debates = Group.query.filter_by(_name='Beverage Debates').first()
-        nfl_goats = Group.query.filter_by(_name='NFL GOATs').first()
-        car_debates = Group.query.filter_by(_name='Car Debates').first()
-        electric_car_channels = [
-            Channel(name='Milk vs Cereal', group_id=internet_debates.id),
-            Channel(name='Hot Dog Sandwich', group_id=internet_debates.id),
-            Channel(name='Pineapple on Pizza', group_id=internet_debates.id),
-            Channel(name='Cats vs Dogs', group_id=internet_debates.id),
-            Channel(name='Coffee or Tea', group_id=internet_debates.id),
-            Channel(name='Economy Cars', group_id=car_debates.id),
-            Channel(name='Luxury Cars', group_id=car_debates.id),
-            Channel(name='Vintage Cars', group_id=car_debates.id),
-            Channel(name='Student Cars', group_id=car_debates.id),
-            Channel(name='Adventure Play House', group_id=calico_vote.id),
-            Channel(name='Sylvanian Family Restraunt House', group_id=calico_vote.id),
-            Channel(name='Magical Mermaid Castle House', group_id=calico_vote.id),
-            Channel(name='Woody School House', group_id=calico_vote.id),
-            Channel(name='Spooky Suprise Haunted House', group_id=calico_vote.id),
-            Channel(name='Brick Oven Bakery House', group_id=calico_vote.id),
-            Channel(name='Food and Drink', group_id=dnero_store.id),
-            Channel(name='Spirit', group_id=dnero_store.id),
-            Channel(name='Limited Edition', group_id=dnero_store.id),
-            Channel(name='Quarterbacks', group_id=nfl_goats.id),
-            Channel(name='Running Backs', group_id=nfl_goats.id),
-            Channel(name='Wide Receivers', group_id=nfl_goats.id),
-            Channel(name='Defensive Players', group_id=nfl_goats.id),
-            Channel(name='NFL Divisions', group_id=nfl_goats.id),
-            Channel(name='Gift Cards', group_id=dnero_store.id),
+        #Prism Channels
+        random_chatroom = Group.query.filter_by(_name='Random Chatroom').first()
+        daily_question = Group.query.filter_by(_name='Daily Question').first()
+        interestchannel = Group.query.filter_by(_name='Interests').first()
+        prism_channels = [
+            Channel(name='How can readers impact the world through inventions?', group_id=random_chatroom.id),
+            Channel(name='Daily Question', group_id=daily_question.id),
+            Channel(name='Interests', group_id=interestchannel.id)
         ]
         
-        channels = home_page_channels + gas_car_channels + hybrid_car_channels + electric_car_channels
+        channels = home_page_channels + prism_channels
+        
         for channel in channels:
             try:
                 db.session.add(channel)

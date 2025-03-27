@@ -82,6 +82,7 @@ class PostAPI:
             return jsonify(json_ready)
 
         @token_required()
+        @token_required()
         def put(self):
             """
             Update a post.
@@ -90,18 +91,27 @@ class PostAPI:
             current_user = g.current_user
             # Obtain the request data
             data = request.get_json()
+            
+            # Validate the presence of the post ID and comment
+            if 'id' not in data:
+                return {'message': 'Post ID is required'}, 400
+            if 'comment' not in data:
+                return {'message': 'Post comment is required'}, 400
+
             # Find the current post from the database table(s)
             post = Post.query.get(data['id'])
             if post is None:
                 return {'message': 'Post not found'}, 404
-            # Update the post
-            post._title = data['title']
-            post._content = data['content']
-            post._channel_id = data['channel_id']
-            # Save the post
+
+            # Update the comment field only
+            post._comment = data['comment']
+
+            # Save the updated post
             post.update()
-            # Return response
+            
+            # Return the updated post as a response
             return jsonify(post.read())
+
 
         @token_required()
         def delete(self):
