@@ -1,7 +1,7 @@
 server {
     listen 80;
     listen [::]:80;
-    server_name crosswise.nighthawkcodingsociety.com;
+    server_name crosswise.stu.nighthawkcodingsociety.com;
     location / {
         proxy_pass http://localhost:3167;
         if ($request_method = OPTIONS) {
