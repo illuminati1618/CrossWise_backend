@@ -1,11 +1,5 @@
 FROM docker.io/python:3.12
 
-WORKDIR /home/ubuntu/prism_backend
-
-RUN ./scripts/db_backup.py
-RUN ./scripts/db_init.py
-RUN ./scripts/db_restore.py
-
 WORKDIR /
 
 # --- [Install python and pip] ---
@@ -16,9 +10,9 @@ COPY . /
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install gunicorn
 
-ENV GUNICORN_CMD_ARGS="--workers=3 --bind=0.0.0.0:8505"
+ENV GUNICORN_CMD_ARGS="--workers=3 --bind=0.0.0.0:3167"
 
-EXPOSE 8505
+EXPOSE 3167
 
 # Define environment variable
 ENV FLASK_ENV=deployed
