@@ -40,6 +40,7 @@ from api.accident import accident_api
 from api.cancer import cancer_api
 from api.estonia import estonia_api
 from api.titanic import titanic_api
+from api.border import border_api
 
 from api.leaderboard import leaderboard_api
 
@@ -97,6 +98,7 @@ app.register_blueprint(accident_api)
 app.register_blueprint(cancer_api)
 app.register_blueprint(estonia_api)
 app.register_blueprint(titanic_api)
+app.register_blueprint(border_api)
 
 # Tell Flask-Login the view function name of your login route
 login_manager.login_view = "login"
