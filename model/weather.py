@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.linear_model import LinearRegression
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class WeatherModel:
     _instance = None
@@ -14,11 +14,8 @@ class WeatherModel:
 
     def _load_data(self):
         file_path = "datasets/san_diego_weather.csv"
-        # print("Loading dataset...")
-
         try:
             df = pd.read_csv(file_path)
-            # print(df.head())  # Check first few rows
         except Exception as e:
             raise FileNotFoundError(f"Error loading CSV: {e}")
 
@@ -27,7 +24,7 @@ class WeatherModel:
         df['Time'] = pd.to_datetime(df['Date_Time']).dt.time
 
         # Convert the reference_date to datetime.date (matching the type of df['Date'])
-        reference_date = datetime(2000, 1, 1).date()  # Ensure it's a date object
+        reference_date = datetime(2000, 1, 1).date()
         df['Date'] = df['Date'].apply(lambda x: (x - reference_date).days)
 
         # Convert time to the number of seconds since midnight
@@ -56,7 +53,6 @@ class WeatherModel:
         # Train the model
         self.model = LinearRegression()
         self.model.fit(X, y)
-        # print("Model trained successfully.")
 
     @classmethod
     def get_instance(cls):
@@ -65,39 +61,71 @@ class WeatherModel:
         return cls._instance
 
     def predict(self, datetime_str):
-        # Convert input Date_Time string to datetime object
         input_datetime = datetime.strptime(datetime_str, '%Y-%m-%d %H:%M:%S')
-
-        # Convert input date and time to numerical values
-        reference_date = datetime(2000, 1, 1).date()  # Ensure it's a date object
+        reference_date = datetime(2000, 1, 1).date()
         date_diff = (input_datetime.date() - reference_date).days
         time_in_seconds = input_datetime.hour * 3600 + input_datetime.minute * 60 + input_datetime.second
 
-        # Create the transformed input for prediction
         weather_data_transformed = pd.DataFrame([[date_diff, time_in_seconds]], columns=self.features)
-        # print("Prediction Input:", weather_data_transformed)
-
-        # Get the predicted values for Temperature, Humidity, Precipitation, and Wind Speed
         predicted_values = self.model.predict(weather_data_transformed)[0]
         prediction_dict = {self.target[i]: predicted_values[i] for i in range(len(self.target))}
-
-        # Print the predictions in a human-readable format
-        print(f"\nPrediction Date and Time: {input_datetime.strftime('%Y-%m-%d %H:%M:%S')}")
-        print("Predicted Weather Information:")
-        for key, value in prediction_dict.items():
-            print(f"{key.replace('_', ' ').title()}: {value:.2f}")
-
+        
+        # Get the final weather classification
+        prediction_dict['Overall_Weather_Classification'] = self.classify_weather(prediction_dict)
+        
         return prediction_dict
 
+    def classify_weather(self, weather_data):
+        temp = weather_data['Temperature_C']
+        humidity = weather_data['Humidity_pct']
+        precipitation = weather_data['Precipitation_mm']
+        wind_speed = weather_data['Wind_Speed_kmh']
 
-    def feature_weights(self):
-        return {feature: weight for feature, weight in zip(self.features, self.model.coef_.flatten())}
+        score = 0
+        
+        if 15 <= temp <= 30:
+            score += 1  # Good temperature range
+        if 30 <= humidity <= 70:
+            score += 1  # Comfortable humidity range
+        if precipitation < 5:
+            score += 1  # Low precipitation
+        if wind_speed < 30:
+            score += 1  # Manageable wind speed
+        
+        if score == 4:
+            return "Excellent"
+        elif score == 3:
+            return "Good"
+        elif score == 2:
+            return "Moderate"
+        else:
+            return "Bad"
+
+    def generate_weather_data(self, days=7):
+        weather_data = {}
+        start_date = datetime(2025, 1, 1)
+        months = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ]
+        
+        for month_index, month in enumerate(months):
+            month_start_date = start_date + timedelta(days=month_index * 30)  # Approximate start of each month
+            weather_data[month] = {}
+            
+            for day in range(days):
+                date_time = month_start_date + timedelta(days=day)
+                day_name = date_time.strftime('%A')
+                weather_data[month][day_name] = {}
+                
+                for hour in range(24):  # Generate predictions for each hour
+                    date_time_hour = date_time + timedelta(hours=hour)
+                    prediction = self.predict(date_time_hour.strftime('%Y-%m-%d %H:%M:%S'))
+                    weather_data[month][day_name][str(hour)] = prediction['Overall_Weather_Classification']
+        
+        return weather_data
 
 # Example usage:
 model = WeatherModel.get_instance()
-
-# Predict based on date and time input
-prediction = model.predict('2025-04-11 22:46:21')  # Date and Time in 'YYYY-MM-DD HH:MM:SS' format
-
-#classifier
-
+weather_list = model.generate_weather_data()
+print(weather_list)
