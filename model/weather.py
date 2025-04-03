@@ -93,13 +93,17 @@ class WeatherModel:
             score += 1  # Manageable wind speed
         
         if score == 4:
-            return "Excellent"
+            # Excellent weather
+            return score
         elif score == 3:
-            return "Good"
+            # Good weather
+            return score
         elif score == 2:
-            return "Moderate"
+            # Average weather
+            return score
         else:
-            return "Bad"
+            # Poor weather
+            return score
 
     def generate_weather_data(self, days=7):
         weather_data = {}
@@ -125,7 +129,8 @@ class WeatherModel:
         
         return weather_data
 
-# Example usage:
+'''
 model = WeatherModel.get_instance()
 weather_list = model.generate_weather_data()
 print(weather_list)
+'''
