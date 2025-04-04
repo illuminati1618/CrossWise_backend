@@ -3,84 +3,46 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 from datetime import datetime, timedelta
 
-class WeatherModel:
-    _instance = None
-
-    def __init__(self):
-        self.model = None
-        self.features = ['Date', 'Time']  # Using Date and Time as features
-        self.target = ['Temperature_C', 'Humidity_pct', 'Precipitation_mm', 'Wind_Speed_kmh']
-        self._load_data()
+class WeatherFormatter:
+    def __init__(self, file_path="datasets/san_diego_weather.csv"):
+        self.file_path = file_path
+        self.data = self._load_data()
+        self.model = self._train_model()
 
     def _load_data(self):
-        file_path = "datasets/san_diego_weather.csv"
         try:
-            df = pd.read_csv(file_path)
+            df = pd.read_csv(self.file_path)
         except Exception as e:
             raise FileNotFoundError(f"Error loading CSV: {e}")
 
-        # Convert Date_Time to datetime and extract the date and time
-        df['Date'] = pd.to_datetime(df['Date_Time']).dt.date
-        df['Time'] = pd.to_datetime(df['Date_Time']).dt.time
+        # Convert Date_Time to datetime format
+        df['Date_Time'] = pd.to_datetime(df['Date_Time'])
+        df['Hour'] = df['Date_Time'].dt.floor('H')  # Round down to the nearest hour
 
-        # Convert the reference_date to datetime.date (matching the type of df['Date'])
-        reference_date = datetime(2000, 1, 1).date()
-        df['Date'] = df['Date'].apply(lambda x: (x - reference_date).days)
+        # Drop irrelevant columns
+        df.drop(columns=['Location'], errors='ignore', inplace=True)
 
-        # Convert time to the number of seconds since midnight
-        df['Time'] = df['Time'].apply(lambda x: x.hour * 3600 + x.minute * 60 + x.second)
+        # Ensure numeric conversion for weather data
+        weather_columns = ['Temperature_C', 'Humidity_pct', 'Precipitation_mm', 'Wind_Speed_kmh']
+        for col in weather_columns:
+            df[col] = pd.to_numeric(df[col], errors='coerce')
+        df.dropna(subset=weather_columns, inplace=True)
 
-        # Drop irrelevant columns like 'Location' and 'Date_Time'
-        df.drop(columns=['Location', 'Date_Time'], errors='ignore', inplace=True)
+        # Aggregate by hour (averaging values when multiple exist)
+        df = df.groupby('Hour', as_index=False)[weather_columns].mean()
 
-        # Ensure all required columns are present
-        missing_cols = set(self.features + self.target) - set(df.columns)
-        if missing_cols:
-            raise ValueError(f"Missing columns in dataset: {missing_cols}")
+        return df
 
-        # Check for non-numeric values in target columns
-        for target in self.target:
-            df[target] = pd.to_numeric(df[target], errors='coerce')
-        df.dropna(subset=self.target, inplace=True)
-
-        # Prepare data for training
-        X = df[self.features]
-        y = df[self.target]
-
-        if X.empty:
-            raise ValueError("Dataset is empty after preprocessing! Check the CSV file.")
-
-        # Train the model
-        self.model = LinearRegression()
-        self.model.fit(X, y)
-
-    @classmethod
-    def get_instance(cls):
-        if cls._instance is None:
-            cls._instance = cls()
-        return cls._instance
-
-    def predict(self, datetime_str):
-        input_datetime = datetime.strptime(datetime_str, '%Y-%m-%d %H:%M:%S')
-        reference_date = datetime(2000, 1, 1).date()
-        date_diff = (input_datetime.date() - reference_date).days
-        time_in_seconds = input_datetime.hour * 3600 + input_datetime.minute * 60 + input_datetime.second
-
-        weather_data_transformed = pd.DataFrame([[date_diff, time_in_seconds]], columns=self.features)
-        predicted_values = self.model.predict(weather_data_transformed)[0]
-        prediction_dict = {self.target[i]: predicted_values[i] for i in range(len(self.target))}
+    def _train_model(self):
+        # Prepare data for training AI model to fill missing values
+        X = np.array([(dt.hour + dt.timetuple().tm_yday * 24) for dt in self.data['Hour']]).reshape(-1, 1)
+        y = self.data[['Temperature_C', 'Humidity_pct', 'Precipitation_mm', 'Wind_Speed_kmh']]
         
-        # Get the final weather classification
-        prediction_dict['Overall_Weather_Classification'] = self.classify_weather(prediction_dict)
-        
-        return prediction_dict
+        model = LinearRegression()
+        model.fit(X, y)
+        return model
 
-    def classify_weather(self, weather_data):
-        temp = weather_data['Temperature_C']
-        humidity = weather_data['Humidity_pct']
-        precipitation = weather_data['Precipitation_mm']
-        wind_speed = weather_data['Wind_Speed_kmh']
-
+    def _calculate_weather_score(self, temp, humidity, precipitation, wind_speed):
         score = 0
         
         if 15 <= temp <= 30:
@@ -92,18 +54,11 @@ class WeatherModel:
         if wind_speed < 30:
             score += 1  # Manageable wind speed
         
-        if score == 4:
-            return "Excellent"
-        elif score == 3:
-            return "Good"
-        elif score == 2:
-            return "Moderate"
-        else:
-            return "Bad"
+        return score
 
     def generate_weather_data(self, days=7):
         weather_data = {}
-        start_date = datetime(2025, 1, 1)
+        start_date = datetime(2024, 1, 1)
         months = [
             "January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"
@@ -118,14 +73,26 @@ class WeatherModel:
                 day_name = date_time.strftime('%A')
                 weather_data[month][day_name] = {}
                 
-                for hour in range(24):  # Generate predictions for each hour
+                for hour in range(24):  # Generate data for each hour
                     date_time_hour = date_time + timedelta(hours=hour)
-                    prediction = self.predict(date_time_hour.strftime('%Y-%m-%d %H:%M:%S'))
-                    weather_data[month][day_name][str(hour)] = prediction['Overall_Weather_Classification']
+                    hour_data = self.data[self.data['Hour'] == date_time_hour]
+                    
+                    if not hour_data.empty:
+                        row = hour_data.iloc[0]
+                        weather_data[month][day_name][str(hour)] = self._calculate_weather_score(
+                            row['Temperature_C'], row['Humidity_pct'], row['Precipitation_mm'], row['Wind_Speed_kmh']
+                        )
+                    else:
+                        predicted_values = self.model.predict(np.array([[hour + date_time_hour.timetuple().tm_yday * 24]]))[0]
+                        weather_data[month][day_name][str(hour)] = self._calculate_weather_score(
+                            predicted_values[0], predicted_values[1], predicted_values[2], predicted_values[3]
+                        )
         
         return weather_data
 
-# Example usage:
-model = WeatherModel.get_instance()
-weather_list = model.generate_weather_data()
+'''
+Example usage:
+formatter = WeatherFormatter()
+weather_list = formatter.generate_weather_data()
 print(weather_list)
+'''
