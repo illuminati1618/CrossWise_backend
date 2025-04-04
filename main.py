@@ -41,7 +41,7 @@ from api.cancer import cancer_api
 from api.estonia import estonia_api
 from api.titanic import titanic_api
 from api.border import border_api
-
+from api.timelapse import timelapse_api
 from api.leaderboard import leaderboard_api
 
 from api.vote import vote_api
@@ -60,6 +60,7 @@ from model.school_classes import SchoolClass, initSchoolClasses
 from model.language import Language, initLanguages
 from model.chat import Chat, initChats
 from model.help_request import HelpRequest, initHelpRequests
+from model.timelapse import TimelapseModel
 
 from model.topusers import TopUser
 from model.topinterests import TopInterest, initTopInterests
@@ -88,6 +89,7 @@ app.register_blueprint(language_api)
 app.register_blueprint(interests_api)
 app.register_blueprint(chat_met_api)
 app.register_blueprint(vote_met_api)
+app.register_blueprint(timelapse_api)
 app.register_blueprint(language_met_api)
 app.register_blueprint(user_met_api)
 app.register_blueprint(post_met_api)
