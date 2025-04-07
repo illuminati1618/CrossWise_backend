@@ -49,7 +49,6 @@ class BorderWaitTimeModel:
         df = pd.DataFrame(data_list)
         print("Loaded columns:", df.columns.tolist())
 
-        # Convert categorical columns to category dtype
         categorical_features = ['bwt_day', 'time_slot', 'month']
         for col in categorical_features:
             df[col] = df[col].astype('category')
@@ -60,11 +59,9 @@ class BorderWaitTimeModel:
         X = df[self.features]
         y = df[self.target]
 
-        # Main model
         self.model = HistGradientBoostingRegressor()
         self.model.fit(X, y)
 
-        # For feature importance, we still use DecisionTree
         self.dt = DecisionTreeRegressor()
         self.dt.fit(X, y)
 
@@ -77,11 +74,10 @@ class BorderWaitTimeModel:
     def predict(self, wait_data):
         wait_df = pd.DataFrame([wait_data])
 
-        # Ensure categorical types match training data
         for col in ['bwt_day', 'time_slot', 'month']:
             wait_df[col] = pd.Series(wait_df[col], dtype='category')
 
-        # Fill missing columns (if any)
+        # fill missing columns (if any)
         for col in self.features:
             if col not in wait_df.columns:
                 wait_df[col] = 0
