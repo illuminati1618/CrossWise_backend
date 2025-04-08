@@ -43,7 +43,7 @@ from api.titanic import titanic_api
 from api.border import border_api
 from api.timelapse import timelapse_api
 from api.leaderboard import leaderboard_api
-
+from api.weather_api import weather_api
 from api.vote import vote_api
 from api.teaminfo import team_member_api
 # database Initialization functions
@@ -79,6 +79,7 @@ app.register_blueprint(channel_api)
 app.register_blueprint(group_api)
 app.register_blueprint(section_api)
 app.register_blueprint(vote_api)
+app.register_blueprint(weather_api)
 app.register_blueprint(school_class_api)
 app.register_blueprint(chat_api)
 app.register_blueprint(team_member_api)
