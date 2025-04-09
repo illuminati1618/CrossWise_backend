@@ -10,6 +10,7 @@ from flask import current_app
 from werkzeug.security import generate_password_hash
 import shutil
 from functools import wraps
+import requests
 
 # import "objects" from "this" project
 from __init__ import app, db, login_manager  # Key Flask objects 
@@ -190,6 +191,12 @@ def u2table():
     users = User.query.all()
     return render_template("u2table.html", user_data=users)
 
+@app.route('/users/bordernotifs')
+@login_required
+def bordernotifs():
+    users = User.query.all()
+    return render_template("bordernotifs.html", user_data=users)
+
 @app.route('/users/votedata')
 @admin_required
 @login_required
@@ -238,6 +245,15 @@ def usettings():
 def ureports():
     users = User.query.all()
     return render_template("ureports.html", user_data=users)
+
+@app.route('/api/proxy/waittimes')
+def proxy_waittimes():
+    try:
+        response = requests.get('https://bwt.cbp.gov/api/waittimes')
+        response.raise_for_status()
+        return jsonify(response.json())
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/users/health', methods=['GET'])
 @admin_required

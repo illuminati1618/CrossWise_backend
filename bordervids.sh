@@ -45,6 +45,12 @@ for ((i=0; i<=SCAN_RANGE; i++)); do
 
   # Try downloading
   curl -s -f -A "Mozilla/5.0" "$URL" -o "$OUTPUT_PATH.tmp"
+  echo"Downloading: $URL"
+    if [ $? -ne 0 ]; then
+        echo "❌ Failed to download: $URL"
+        rm -f "$OUTPUT_PATH.tmp"
+        continue
+    fi
 
   # Check if file is large enough
   if [ -s "$OUTPUT_PATH.tmp" ] && [ $(stat -c%s "$OUTPUT_PATH.tmp") -ge 50000 ]; then

@@ -1,0 +1,385 @@
+{% extends "layouts/base.html" %}
+{% set project = "Border Alerts" %}
+
+{% block style %}
+    <style>
+        :root {
+            --color-dark: #121212;
+            --color-darker: #1E1E1E;
+            --color-accent: #4285F4;
+            --color-success: #34A853;
+            --color-warning: #FBBC05;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-darker);
+            color: #f0f4f8;
+        }
+
+        .card {
+            background-color: var(--color-dark);
+            border: 1px solid #3c4c60;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            color: var(--color-accent);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        h2 {
+            color: var(--color-accent);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .form-label {
+            color: #a0aec0;
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            background-color: var(--color-darker);
+            border: 1px solid #3c4c60;
+            color: #f0f4f8;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--color-accent);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.3);
+        }
+
+        .btn {
+            background-color: var(--color-accent);
+            color: white;
+            font-weight: 600;
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.375rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #3367d6;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+        }
+
+        .alert-success {
+            background-color: rgba(52, 168, 83, 0.2);
+            border: 1px solid var(--color-success);
+            color: #a0ecb1;
+        }
+
+        .alert-warning {
+            background-color: rgba(251, 188, 5, 0.2);
+            border: 1px solid var(--color-warning);
+            color: #f5d67b;
+        }
+
+        .wait-time-display {
+            font-size: 1.25rem;
+            margin: 1rem 0;
+            padding: 0.5rem;
+            background-color: rgba(66, 133, 244, 0.1);
+            border-radius: 0.375rem;
+            border-left: 4px solid var(--color-accent);
+        }
+
+        .notification-item {
+            background-color: rgba(66, 133, 244, 0.1);
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--color-accent);
+        }
+
+        .notification-item h3 {
+            margin-top: 0;
+            color: var(--color-accent);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        .badge-primary {
+            background-color: var(--color-accent);
+            color: white;
+        }
+
+        .badge-success {
+            background-color: var(--color-success);
+            color: white;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="px-5 py-5 mx-auto" style="max-width: 1200px;">
+        <h1>Border Crossing Notifications</h1>
+        
+        <div class="card">
+            <h2>Current San Ysidro Wait Times</h2>
+            
+            <div class="wait-time-display">
+                <strong>Standard Vehicles:</strong> 
+                <span id="standard-vehicles-wait">Loading...</span>
+            </div>
+            
+            <div class="wait-time-display">
+                <strong>SENTRI Lanes:</strong> 
+                <span id="sentri-wait">Loading...</span>
+            </div>
+            
+            <div class="wait-time-display">
+                <strong>Pedestrian:</strong> 
+                <span id="pedestrian-wait">Loading...</span>
+            </div>
+            
+            <p class="text-gray-400">Last updated: <span id="last-updated">Just now</span></p>
+        </div>
+        
+        <div class="card">
+            <h2>Create New Notification</h2>
+            
+            <form id="notification-form">
+                <div class="form-group">
+                    <label class="form-label">Notification Type</label>
+                    <select class="form-control" id="notification-type" required>
+                        <option value="">Select notification type</option>
+                        <option value="standard">Standard Vehicles</option>
+                        <option value="sentri">SENTRI Lanes</option>
+                        <option value="pedestrian">Pedestrian</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Condition</label>
+                    <select class="form-control" id="condition-type" required>
+                        <option value="">Select condition</option>
+                        <option value="below">When wait time falls below</option>
+                        <option value="above">When wait time rises above</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Wait Time Threshold (minutes)</label>
+                    <input type="number" class="form-control" id="wait-time" min="1" max="240" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Notification Method</label>
+                    <select class="form-control" id="notification-method" required>
+                        <option value="">Select notification method</option>
+                        <option value="email">Email</option>
+                        <option value="sms">Text Message</option>
+                        <option value="both">Both Email and Text</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="email-group" style="display: none;">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-control" id="email">
+                </div>
+                
+                <div class="form-group" id="phone-group" style="display: none;">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" class="form-control" id="phone" placeholder="+1 (XXX) XXX-XXXX">
+                </div>
+                
+                <button type="submit" class="btn">Create Notification</button>
+            </form>
+        </div>
+        
+        <div class="card">
+            <h2>Your Active Notifications</h2>
+            
+            <div id="active-notifications">
+                <p class="text-gray-400">You don't have any active notifications yet.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fetch current wait times from API
+        async function fetchWaitTimes() {
+            try {
+                const response = await fetch('/api/proxy/waittimes');
+                const data = await response.json();
+                
+                // Find San Ysidro port
+                const sanYsidro = data.find(port => 
+                    port.port_name === 'San Ysidro' && 
+                    port.border === 'Mexican Border'
+                );
+                
+                if (sanYsidro) {
+                    // Update wait time displays
+                    document.getElementById('standard-vehicles-wait').textContent = 
+                        sanYsidro.passenger_vehicle_lanes.standard_lanes.delay_minutes + ' minutes';
+                    
+                    document.getElementById('sentri-wait').textContent = 
+                        sanYsidro.passenger_vehicle_lanes.NEXUS_SENTRI_lanes.delay_minutes + ' minutes';
+                    
+                    document.getElementById('pedestrian-wait').textContent = 
+                        sanYsidro.pedestrian_lanes.standard_lanes.delay_minutes + ' minutes';
+                    
+                    // Update last updated time
+                    const now = new Date();
+                    document.getElementById('last-updated').textContent = 
+                        now.toLocaleTimeString() + ' on ' + now.toLocaleDateString();
+                } else {
+                    throw new Error('San Ysidro data not found');
+                }
+            } catch (error) {
+                console.error('Error fetching wait times:', error);
+                document.getElementById('standard-vehicles-wait').textContent = 'Unavailable';
+                document.getElementById('sentri-wait').textContent = 'Unavailable';
+                document.getElementById('pedestrian-wait').textContent = 'Unavailable';
+            }
+        }
+        
+        // Show/hide email/phone fields based on notification method
+        document.getElementById('notification-method').addEventListener('change', function() {
+            const method = this.value;
+            document.getElementById('email-group').style.display = 
+                (method === 'email' || method === 'both') ? 'block' : 'none';
+            document.getElementById('phone-group').style.display = 
+                (method === 'sms' || method === 'both') ? 'block' : 'none';
+        });
+        
+        // Form submission
+        document.getElementById('notification-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const type = document.getElementById('notification-type').value;
+            const condition = document.getElementById('condition-type').value;
+            const waitTime = document.getElementById('wait-time').value;
+            const method = document.getElementById('notification-method').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            
+            // Validate
+            if (method === 'email' || method === 'both') {
+                if (!email || !email.includes('@')) {
+                    alert('Please enter a valid email address');
+                    return;
+                }
+            }
+            
+            if (method === 'sms' || method === 'both') {
+                if (!phone || phone.length < 10) {
+                    alert('Please enter a valid phone number');
+                    return;
+                }
+            }
+            
+            // Create notification (in a real app, this would send to your backend)
+            const notification = {
+                type,
+                condition,
+                waitTime,
+                method,
+                email,
+                phone,
+                created: new Date().toISOString()
+            };
+            
+            // Add to active notifications
+            addNotificationToUI(notification);
+            
+            // Show success message
+            alert('Notification created successfully!');
+            
+            // Reset form
+            this.reset();
+            document.getElementById('email-group').style.display = 'none';
+            document.getElementById('phone-group').style.display = 'none';
+        });
+        
+        // Add notification to the UI
+        function addNotificationToUI(notification) {
+            const notificationsContainer = document.getElementById('active-notifications');
+            
+            // Remove the "no notifications" message if it exists
+            if (notificationsContainer.querySelector('p.text-gray-400')) {
+                notificationsContainer.innerHTML = '';
+            }
+            
+            // Create notification element
+            const notificationEl = document.createElement('div');
+            notificationEl.className = 'notification-item';
+            
+            // Map types to display names
+            const typeNames = {
+                'standard': 'Standard Vehicles',
+                'sentri': 'SENTRI Lanes',
+                'pedestrian': 'Pedestrian'
+            };
+            
+            // Map methods to display names
+            const methodNames = {
+                'email': 'Email',
+                'sms': 'Text Message',
+                'both': 'Email & Text'
+            };
+            
+            notificationEl.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h3>${typeNames[notification.type]}</h3>
+                        <p>Notify me ${notification.condition === 'below' ? 'when wait time falls below' : 'when wait time rises above'} ${notification.waitTime} minutes</p>
+                        <span class="badge badge-primary">${methodNames[notification.method]}</span>
+                        <small class="text-gray-400">Created: ${new Date(notification.created).toLocaleString()}</small>
+                    </div>
+                    <button class="btn" style="background-color: #f44336;" onclick="removeNotification(this)">Remove</button>
+                </div>
+            `;
+            
+            notificationsContainer.prepend(notificationEl);
+        }
+        
+        // Remove notification (would call your backend in a real app)
+        window.removeNotification = function(button) {
+            if (confirm('Are you sure you want to remove this notification?')) {
+                button.closest('.notification-item').remove();
+                
+                // Show "no notifications" message if none left
+                const notificationsContainer = document.getElementById('active-notifications');
+                if (notificationsContainer.children.length === 0) {
+                    notificationsContainer.innerHTML = '<p class="text-gray-400">You don\'t have any active notifications yet.</p>';
+                }
+            }
+        };
+        
+        // Initial fetch of wait times
+        fetchWaitTimes();
+        
+        // Refresh every 5 minutes
+        setInterval(fetchWaitTimes, 5 * 60 * 1000);
+    </script>
+{% endblock %}
