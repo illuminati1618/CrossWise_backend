@@ -1,0 +1,139 @@
+{% extends "layouts/base.html" %}
+{% set project = "Data Dashboard" %}
+
+{% block body %}
+<div class="px-5 py-5 mx-auto" style="max-width: 1200px;">
+    <h1 class="mb-4">📊 Data Dashboard</h1>
+
+    <div class="card mb-5">
+        <h2>San Diego Weather (CSV)</h2>
+        <table class="table table-striped" id="weatherTable">
+            <thead><tr id="weatherHeader"></tr></thead>
+            <tbody id="weatherBody"></tbody>
+        </table>
+        <button class="btn btn-primary" id="loadMoreWeather">Load More</button>
+    </div>
+
+    <div class="card">
+        <h2>Monthly Data (JSON)</h2>
+        <label for="monthSelect" class="form-label">Select Month:</label>
+        <select class="form-control mb-3" id="monthSelect">
+            <option value="january">January</option>
+            <option value="february">February</option>
+            <option value="march">March</option>
+            <option value="april">April</option>
+        </select>
+        <table class="table table-striped" id="monthTable">
+            <thead><tr id="monthHeader"></tr></thead>
+            <tbody id="monthBody"></tbody>
+        </table>
+        <button class="btn btn-primary" id="loadMoreMonth">Load More</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block background %}
+<script>
+    let csvRows = [], csvIndex = 1;
+    let jsonRows = [], jsonIndex = 0;
+
+    async function loadCSV() {
+        try {
+            const res = await fetch('/data/weather');
+            const text = await res.text();
+            csvRows = text.trim().split('\n').map(r => r.split(','));
+            csvIndex = 1;
+
+            const header = document.getElementById('weatherHeader');
+            header.innerHTML = '';
+            csvRows[0].forEach(col => header.innerHTML += `<th>${col}</th>`);
+
+            document.getElementById('weatherBody').innerHTML = '';
+            renderMoreCSV();
+        } catch (err) {
+            console.error('Error loading weather CSV:', err);
+        }
+    }
+
+    function renderMoreCSV() {
+        const body = document.getElementById('weatherBody');
+        const limit = Math.min(csvIndex + 20, csvRows.length);
+        for (let i = csvIndex; i < limit; i++) {
+            let row = '<tr>';
+            csvRows[i].forEach(cell => row += `<td>${cell}</td>`);
+            row += '</tr>';
+            body.innerHTML += row;
+        }
+        csvIndex = limit;
+        if (csvIndex >= csvRows.length) document.getElementById('loadMoreWeather').disabled = true;
+    }
+
+    async function loadJSONMonth(month) {
+        try {
+            const res = await fetch(`/data/${month}`);
+            const data = await res.json();
+            console.log('Fetched JSON data:', data); // ✅ Debug log
+
+            const header = document.getElementById('monthHeader');
+            const body = document.getElementById('monthBody');
+            header.innerHTML = '';
+            body.innerHTML = '';
+            jsonIndex = 0;
+
+            if (!data || !Array.isArray(data.wait_times)) {
+                body.innerHTML = `<tr><td colspan="100%">Error loading data</td></tr>`;
+                return;
+            }
+
+            if (data.wait_times.length === 0) {
+                body.innerHTML = `<tr><td colspan="100%">No data for this month</td></tr>`;
+                return;
+            }
+
+            jsonRows = data.wait_times;
+
+            // ✅ Filter out the column you want to exclude
+            const keys = Object.keys(jsonRows[0]).filter(key => key !== 'cv_time_avg');
+
+            keys.forEach(key => {
+                header.innerHTML += `<th>${key}</th>`;
+            });
+
+            renderMoreJSON(keys);  // Pass filtered keys to rendering
+        } catch (err) {
+            console.error('Error loading JSON month data:', err);
+        }
+    }
+
+
+
+    function renderMoreJSON(keys) {
+        const body = document.getElementById('monthBody');
+        const limit = Math.min(jsonIndex + 20, jsonRows.length);
+
+        for (let i = jsonIndex; i < limit; i++) {
+            let row = '<tr>';
+            keys.forEach(key => row += `<td>${jsonRows[i][key]}</td>`);
+            row += '</tr>';
+            body.innerHTML += row;
+        }
+
+        jsonIndex = limit;
+        if (jsonIndex >= jsonRows.length) document.getElementById('loadMoreMonth').disabled = true;
+        else document.getElementById('loadMoreMonth').disabled = false;
+    }
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadCSV();
+        loadJSONMonth('january');
+
+        document.getElementById('monthSelect').addEventListener('change', (e) => {
+            loadJSONMonth(e.target.value);
+        });
+
+        document.getElementById('loadMoreWeather').addEventListener('click', renderMoreCSV);
+        document.getElementById('loadMoreMonth').addEventListener('click', renderMoreJSON);
+    });
+</script>
+{% endblock %}

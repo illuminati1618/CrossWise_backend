@@ -6,7 +6,7 @@ from flask import abort, redirect, render_template, request, send_from_directory
 from flask_login import current_user, login_user, logout_user
 from flask.cli import AppGroup
 from flask_login import current_user, login_required
-from flask import current_app
+from flask import current_app, send_file
 from werkzeug.security import generate_password_hash
 import shutil
 from functools import wraps
@@ -196,6 +196,33 @@ def u2table():
 def bordernotifs():
     users = User.query.all()
     return render_template("bordernotifs.html", user_data=users)
+
+@app.route("/data/weather")
+def get_weather_csv():
+    return send_file("datasets/san_diego_weather.csv", mimetype="text/csv")
+
+@app.route('/data/<month>')
+def get_month_data(month):
+    path_map = {
+        "january": "datasets/january.json",
+        "february": "datasets/february.json",
+        "march": "datasets/march.json",
+        "april": "datasets/april.json"
+    }
+
+    if month not in path_map:
+        return jsonify({"error": "Invalid month"}), 404
+
+    try:
+        with open(path_map[month], 'r') as f:
+            data = json.load(f)
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@app.route('/users/data_dashboard')
+def data_dashboard():
+    return render_template("data_dashboard.html")
 
 @app.route('/users/votedata')
 @admin_required
