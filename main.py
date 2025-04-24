@@ -73,6 +73,7 @@ from model.usettings import Settings  # Import the Settings model
 from model.accident import AccidentModel
 from model.cancer import CancerModel
 from model.estonia import EstoniaModel
+from model.help_request import HelpRequest
 from model.titanic import TitanicModel
 
 # server only Views
@@ -294,6 +295,14 @@ def proxy_waittimes():
 def uhealth():
     users = User.query.all()
     return render_template("uhealth.html", user_data=users)
+
+@app.route("/users/help", methods=["GET"])
+@admin_required
+@login_required
+def uhelp():
+    users = HelpRequest.query.all()
+    print(users[0])
+    return render_template("uhelp.html", user_data=users)
 
 @app.route('/general-settings', methods=['GET', 'POST'])
 @login_required
