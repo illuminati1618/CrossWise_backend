@@ -244,7 +244,7 @@ class UserAPI:
                     path='/',
                     samesite='None'
                 )
-                return resp
+                return response
             except Exception as e:
                 return {
                     "message": "Failed to invalidate token",
@@ -282,7 +282,10 @@ class UserAPI:
             if not following_list:
                 return {'message': 'No users found that you are following'}, 404
             return jsonify(following_list)
-
+    
+    
+    
+    
     class _MutualConnections(Resource):
         @token_required()
         def get(self):
@@ -304,7 +307,6 @@ class UserAPI:
                             mutual_connections[follower_uid].append(mutual_follower_uid)
 
             return jsonify(mutual_connections)
-
 # Register the API resources with the Blueprint
 api.add_resource(UserAPI._ID, '/id')
 api.add_resource(UserAPI._BULK_CRUD, '/users')
@@ -313,3 +315,4 @@ api.add_resource(UserAPI._Security, '/authenticate')
 api.add_resource(UserAPI._Followers, '/followers')
 api.add_resource(UserAPI._Following, '/following')
 api.add_resource(UserAPI._MutualConnections, '/mutual_connections')
+

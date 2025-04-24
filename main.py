@@ -43,6 +43,8 @@ from api.estonia import estonia_api
 from api.titanic import titanic_api
 from api.border import border_api
 from api.timelapse import timelapse_api
+from api.user_facial import facial_api
+
 from api.leaderboard import leaderboard_api
 from api.weather_api import weather_api
 from api.vote import vote_api
@@ -62,6 +64,8 @@ from model.language import Language, initLanguages
 from model.chat import Chat, initChats
 from model.help_request import HelpRequest, initHelpRequests
 from model.timelapse import TimelapseModel
+from model.facial_encoding import FacialEncoding5c
+
 
 from model.topusers import TopUser
 from model.topinterests import TopInterest, initTopInterests
@@ -70,6 +74,7 @@ from model.accident import AccidentModel
 from model.cancer import CancerModel
 from model.estonia import EstoniaModel
 from model.titanic import TitanicModel
+
 # server only Views
 
 # register URIs for api endpoints
@@ -103,6 +108,7 @@ app.register_blueprint(cancer_api)
 app.register_blueprint(estonia_api)
 app.register_blueprint(titanic_api)
 app.register_blueprint(border_api)
+app.register_blueprint(facial_api)
 
 # Tell Flask-Login the view function name of your login route
 login_manager.login_view = "login"

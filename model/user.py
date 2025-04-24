@@ -61,6 +61,7 @@ class User(db.Model, UserMixin):
     _car = db.Column(db.String(255), unique=False, nullable=True)
     _interests = db.Column(db.String(255), unique=False, nullable=True)  # New field added here
     _followers = db.Column(db.String(255), unique=False, nullable=True)  # New field added here
+    _facial_data = db.Column(db.Text, nullable=True)  # For storing facial embedding as JSON
 
     posts = db.relationship('Post', backref='author', lazy=True)
                                  
@@ -87,7 +88,6 @@ class User(db.Model, UserMixin):
         self._car = car
         self._interests = interests
         self._followers = followers
-
     @property
     def interests(self):
         """
@@ -120,6 +120,13 @@ class User(db.Model, UserMixin):
             self._interests = interests
         else:
             self._interests = ""
+    @property
+    def facial_data(self):
+        return self._facial_data
+
+    @facial_data.setter
+    def facial_data(self, data):
+        self._facial_data = data
 
     @followers.setter
     def followers(self, followers):
