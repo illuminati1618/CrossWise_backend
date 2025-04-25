@@ -2,6 +2,7 @@
 
 import pandas as pd
 import numpy as np
+import requests
 from sklearn.linear_model import LinearRegression
 from datetime import datetime, timedelta
 
@@ -83,6 +84,9 @@ class WeatherFormatter:
                         weather_data[month][day_name][str(hour)] = self._calculate_weather_score(
                             predicted_values[0], predicted_values[1], predicted_values[2], predicted_values[3]
                         )
+
+        return weather_data
+
     def get_weather_score_for_datetime(self, dt):
         dt_hour = dt.replace(minute=0, second=0, microsecond=0)
         hour_data = self.data[self.data['Hour'] == dt_hour]
@@ -99,4 +103,21 @@ class WeatherFormatter:
             )[0]
             return self._calculate_weather_score(*predicted_values)
 
-        return weather_data
+    def get_realtime_weather_score(self):
+        url = "https://api.weather.gov/stations/KNKX/observations/latest"
+        headers = {"User-Agent": "kanhay.patil@gmail.com"}
+
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            data = response.json()["properties"]
+
+            temp = data["temperature"]["value"]
+            humidity = data["relativeHumidity"]["value"]
+            precip = data["precipitationLastHour"]["value"] or 0.0
+            wind_speed = data["windSpeed"]["value"]
+
+            return self._calculate_weather_score(temp, humidity, precip, wind_speed)
+        except Exception as e:
+            print(f"Failed to fetch real-time weather data: {e}")
+            return None

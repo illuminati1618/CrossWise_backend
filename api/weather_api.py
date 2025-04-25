@@ -1,5 +1,3 @@
-# routes/weather_api.py
-
 from flask import Blueprint, jsonify, request
 from flask_restful import Api, Resource
 from model.weather_formater import WeatherFormatter
@@ -42,8 +40,16 @@ class WeatherAPI(Resource):
                 days = int(body.get('days', 7))
                 return jsonify(formatter.generate_weather_data(days=days))
 
+            elif mode == 'realtime':
+                # Get real-time weather score
+                score = formatter.get_realtime_weather_score()
+                return jsonify({
+                    "datetime": datetime.utcnow().isoformat(),
+                    "weather_score": score
+                })
+
             else:
-                return {"message": "Invalid mode. Use 'datetime' or 'all'."}, 400
+                return {"message": "Invalid mode. Use 'datetime', 'all', or 'realtime'."}, 400
 
         except Exception as e:
             return {"message": f"Error: {str(e)}"}, 500
