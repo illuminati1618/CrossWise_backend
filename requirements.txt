@@ -18,6 +18,7 @@ psycopg2-binary
 python_dotenv
 boto3
 moviepy==1.0.3
+setuptools
 face_recognition
 dlib
 plotly
