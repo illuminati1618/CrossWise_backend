@@ -5,6 +5,7 @@ import numpy as np
 import requests
 from sklearn.linear_model import LinearRegression
 from datetime import datetime, timedelta
+import random
 
 class WeatherFormatter:
     def __init__(self, file_path="datasets/san_diego_weather.csv"):
@@ -43,13 +44,13 @@ class WeatherFormatter:
     def _calculate_weather_score(self, temp, humidity, precipitation, wind_speed):
         score = 0
         if 15 <= temp <= 30:
-            score += 1
+            score += random.randint(1, 2)
         if 30 <= humidity <= 70:
-            score += 1
+            score +=  random.randint(0, 2)
         if precipitation < 5:
-            score += 1
+            score +=  random.randint(1, 1)
         if wind_speed < 30:
-            score += 1
+            score +=  random.randint(1, 2)
         return score
 
     def generate_weather_data(self, days=7):
