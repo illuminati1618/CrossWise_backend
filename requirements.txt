@@ -22,3 +22,4 @@ setuptools
 face_recognition
 dlib
 plotly
+cmake
