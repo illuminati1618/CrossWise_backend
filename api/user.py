@@ -244,7 +244,8 @@ class UserAPI:
                     path='/',
                     samesite='None'
                 )
-                return response
+                return resp
+            
             except Exception as e:
                 return {
                     "message": "Failed to invalidate token",
