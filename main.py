@@ -12,6 +12,7 @@ import shutil
 from functools import wraps
 import requests
 
+
 # import "objects" from "this" project
 from __init__ import app, db, login_manager  # Key Flask objects 
 # API endpoints
@@ -45,6 +46,7 @@ from api.border import border_api
 from api.timelapse import timelapse_api
 from api.user_facial import facial_api
 from api.historicalgraph_api import historicalgraph_api
+from api.border_email import border_email_api
 
 from api.leaderboard import leaderboard_api
 from api.weather_api import weather_api
@@ -112,7 +114,7 @@ app.register_blueprint(titanic_api)
 app.register_blueprint(border_api)
 app.register_blueprint(facial_api)
 app.register_blueprint(historicalgraph_api)  # Register the new historical graph API
-
+app.register_blueprint(border_email_api)
 # Tell Flask-Login the view function name of your login route
 login_manager.login_view = "login"
 

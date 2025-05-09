@@ -163,7 +163,7 @@
         </div>
         
         <div class="card">
-            <h2>Create New Notification</h2>
+            <h2>Create New Email Notification</h2>
             
             <form id="notification-form">
                 <div class="form-group">
@@ -191,27 +191,16 @@
                 </div>
                 
                 <div class="form-group">
-                    <label class="form-label">Notification Method</label>
-                    <select class="form-control" id="notification-method" required>
-                        <option value="">Select notification method</option>
-                        <option value="email">Email</option>
-                        <option value="sms">Text Message</option>
-                        <option value="both">Both Email and Text</option>
-                    </select>
-                </div>
-                
-                <div class="form-group" id="email-group" style="display: none;">
                     <label class="form-label">Email Address</label>
-                    <input type="email" class="form-control" id="email">
-                </div>
-                
-                <div class="form-group" id="phone-group" style="display: none;">
-                    <label class="form-label">Phone Number</label>
-                    <input type="tel" class="form-control" id="phone" placeholder="+1 (XXX) XXX-XXXX">
+                    <input type="email" class="form-control" id="email" required>
                 </div>
                 
                 <button type="submit" class="btn">Create Notification</button>
             </form>
+            
+            <div class="mt-4">
+                <button id="test-email-btn" class="btn" style="background-color: var(--color-warning); color: var(--color-dark);">Send Test Email</button>
+            </div>
         </div>
         
         <div class="card">
@@ -262,63 +251,88 @@
             }
         }
         
-        // Show/hide email/phone fields based on notification method
-        document.getElementById('notification-method').addEventListener('change', function() {
-            const method = this.value;
-            document.getElementById('email-group').style.display = 
-                (method === 'email' || method === 'both') ? 'block' : 'none';
-            document.getElementById('phone-group').style.display = 
-                (method === 'sms' || method === 'both') ? 'block' : 'none';
-        });
+        // Load existing notifications
+        async function loadNotifications() {
+            try {
+                const response = await fetch('/api/border_email/notifications');
+                const data = await response.json();
+                
+                if (data.success && data.notifications.length > 0) {
+                    const notificationsContainer = document.getElementById('active-notifications');
+                    notificationsContainer.innerHTML = '';
+                    
+                    data.notifications.forEach(notification => {
+                        addNotificationToUI({
+                            id: notification.id,
+                            type: notification.type,
+                            condition: notification.condition,
+                            waitTime: notification.waitTime,
+                            email: notification.email,
+                            created: notification.created
+                        });
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+            }
+        }
         
         // Form submission
-        document.getElementById('notification-form').addEventListener('submit', function(e) {
+        document.getElementById('notification-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             // Get form values
             const type = document.getElementById('notification-type').value;
             const condition = document.getElementById('condition-type').value;
             const waitTime = document.getElementById('wait-time').value;
-            const method = document.getElementById('notification-method').value;
             const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
             
-            // Validate
-            if (method === 'email' || method === 'both') {
-                if (!email || !email.includes('@')) {
-                    alert('Please enter a valid email address');
-                    return;
-                }
+            // Validate email
+            if (!email || !email.includes('@')) {
+                alert('Please enter a valid email address');
+                return;
             }
             
-            if (method === 'sms' || method === 'both') {
-                if (!phone || phone.length < 10) {
-                    alert('Please enter a valid phone number');
-                    return;
-                }
-            }
-            
-            // Create notification (in a real app, this would send to your backend)
+            // Create notification and send to backend
             const notification = {
                 type,
                 condition,
                 waitTime,
-                method,
                 email,
-                phone,
                 created: new Date().toISOString()
             };
             
-            // Add to active notifications
-            addNotificationToUI(notification);
-            
-            // Show success message
-            alert('Notification created successfully!');
-            
-            // Reset form
-            this.reset();
-            document.getElementById('email-group').style.display = 'none';
-            document.getElementById('phone-group').style.display = 'none';
+            try {
+                // Send to Python backend
+                const response = await fetch('/api/border_email/notifications', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(notification)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Add ID from response
+                    notification.id = result.id;
+                    
+                    // Add to active notifications
+                    addNotificationToUI(notification);
+                    
+                    // Show success message
+                    alert('Notification created successfully! A confirmation email has been sent.');
+                    
+                    // Reset form
+                    this.reset();
+                } else {
+                    alert(`Error: ${result.error}`);
+                }
+            } catch (error) {
+                console.error('Error creating notification:', error);
+                alert('Failed to create notification. Please try again.');
+            }
         });
         
         // Add notification to the UI
@@ -333,6 +347,7 @@
             // Create notification element
             const notificationEl = document.createElement('div');
             notificationEl.className = 'notification-item';
+            notificationEl.dataset.id = notification.id;
             
             // Map types to display names
             const typeNames = {
@@ -341,45 +356,100 @@
                 'pedestrian': 'Pedestrian'
             };
             
-            // Map methods to display names
-            const methodNames = {
-                'email': 'Email',
-                'sms': 'Text Message',
-                'both': 'Email & Text'
-            };
-            
             notificationEl.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <h3>${typeNames[notification.type]}</h3>
                         <p>Notify me ${notification.condition === 'below' ? 'when wait time falls below' : 'when wait time rises above'} ${notification.waitTime} minutes</p>
-                        <span class="badge badge-primary">${methodNames[notification.method]}</span>
+                        <p>Email: ${notification.email}</p>
                         <small class="text-gray-400">Created: ${new Date(notification.created).toLocaleString()}</small>
                     </div>
-                    <button class="btn" style="background-color: #f44336;" onclick="removeNotification(this)">Remove</button>
+                    <button class="btn" style="background-color: #f44336;" onclick="removeNotification(${notification.id})">Remove</button>
                 </div>
             `;
             
             notificationsContainer.prepend(notificationEl);
         }
         
-        // Remove notification (would call your backend in a real app)
-        window.removeNotification = function(button) {
+        // Remove notification
+        window.removeNotification = async function(notificationId) {
             if (confirm('Are you sure you want to remove this notification?')) {
-                button.closest('.notification-item').remove();
-                
-                // Show "no notifications" message if none left
-                const notificationsContainer = document.getElementById('active-notifications');
-                if (notificationsContainer.children.length === 0) {
-                    notificationsContainer.innerHTML = '<p class="text-gray-400">You don\'t have any active notifications yet.</p>';
+                try {
+                    const response = await fetch(`/api/border_email/notifications/${notificationId}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        // Remove from UI
+                        const notificationEl = document.querySelector(`.notification-item[data-id="${notificationId}"]`);
+                        if (notificationEl) {
+                            notificationEl.remove();
+                        }
+                        
+                        // Show "no notifications" message if none left
+                        const notificationsContainer = document.getElementById('active-notifications');
+                        if (notificationsContainer.children.length === 0) {
+                            notificationsContainer.innerHTML = '<p class="text-gray-400">You don\'t have any active notifications yet.</p>';
+                        }
+                        
+                        alert('Notification removed successfully.');
+                    } else {
+                        alert(`Error: ${result.error}`);
+                    }
+                } catch (error) {
+                    console.error('Error removing notification:', error);
+                    alert('Failed to remove notification. Please try again.');
                 }
             }
         };
         
+        // Test Email Button - FIXED CODE
+        document.getElementById('test-email-btn').addEventListener('click', async function() {
+            const email = document.getElementById('email').value;
+            
+            if (!email || !email.includes('@')) {
+                alert('Please enter a valid email address in the form above.');
+                return;
+            }
+            
+            try {
+                console.log("Sending test email to:", email);
+                
+                const response = await fetch('/api/border_email/test_email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email: email })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                console.log("Test email response:", result);
+                
+                if (result.success) {
+                    alert(`Test email sent successfully to ${email}`);
+                } else {
+                    alert(`Error: ${result.error}`);
+                }
+            } catch (error) {
+                console.error('Error sending test email:', error);
+                alert('Failed to send test email. Please check the console for details.');
+            }
+        });
+        
         // Initial fetch of wait times
         fetchWaitTimes();
         
-        // Refresh every 5 minutes
+        // Load existing notifications
+        loadNotifications();
+        
+        // Refresh wait times every 5 minutes
         setInterval(fetchWaitTimes, 5 * 60 * 1000);
     </script>
 {% endblock %}
