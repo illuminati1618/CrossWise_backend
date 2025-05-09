@@ -7,7 +7,7 @@ RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y python3 python3-pip git cmake
 COPY . /
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 RUN pip install setuptools
 RUN pip install gunicorn
 
