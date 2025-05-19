@@ -30,29 +30,33 @@ class WeatherAPI(Resource):
                     return {"message": "Invalid datetime format. Use ISO format like '2024-03-25T14:00'"}, 400
 
                 dt = dt.replace(minute=0, second=0, microsecond=0)
-                score = formatter.get_weather_score_for_datetime(dt)
+                prediction = formatter.get_weather_score_for_datetime(dt)
                 return jsonify({
                     "datetime": dt.isoformat(),
-                    "weather_score": score
+                    "precipitation_mm": round(prediction['Precipitation'], 2),
+                    "avg_temp_c": round(prediction['AvgTemp'], 2),
+                    "min_temp_c": round(prediction['MinTemp'], 2),
+                    "max_temp_c": round(prediction['MaxTemp'], 2)
                 })
 
             elif mode == 'all':
-                days = int(body.get('days', 7))
-                return jsonify(formatter.generate_weather_data(days=days))
+                return {"message": "Mode 'all' is not supported with this model."}, 400
 
             elif mode == 'realtime':
-                # Get real-time weather score
-                score = formatter.get_realtime_weather_score()
+                now = datetime.utcnow().replace(minute=0, second=0, microsecond=0)
+                prediction = formatter.get_weather_score_for_datetime(now)
                 return jsonify({
-                    "datetime": datetime.utcnow().isoformat(),
-                    "weather_score": score
+                    "datetime": now.isoformat(),
+                    "precipitation_mm": round(prediction['Precipitation'], 2),
+                    "avg_temp_c": round(prediction['AvgTemp'], 2),
+                    "min_temp_c": round(prediction['MinTemp'], 2),
+                    "max_temp_c": round(prediction['MaxTemp'], 2)
                 })
 
             else:
-                return {"message": "Invalid mode. Use 'datetime', 'all', or 'realtime'."}, 400
+                return {"message": "Invalid mode. Use 'datetime' or 'realtime'."}, 400
 
         except Exception as e:
             return {"message": f"Error: {str(e)}"}, 500
-
 
 api.add_resource(WeatherAPI, '/weather-data')
