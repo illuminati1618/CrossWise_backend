@@ -22,22 +22,13 @@ from api.post import post_api
 from api.channel import channel_api
 from api.group import group_api
 from api.section import section_api
-from api.player import player_api
-from api.poll import poll_api
-from api.teaminfo import team_member_api
-from api.school_classes import school_class_api
 from api.chat import chat_api
-from api.language import language_api
 from api.interests import interests_api  # Import the new interests API
 from api.chat_met import chat_met_api
-from api.vote_met import vote_met_api
-from api.language_met import language_met_api
 from api.usettings import settings_api
 from api.user_met import user_met_api
 from api.post_met import post_met_api
-from api.poll_met import poll_met_api
 from api.health import health_api
-from api.help import help_api
 from api.accident import accident_api
 from api.cancer import cancer_api
 from api.estonia import estonia_api
@@ -48,11 +39,8 @@ from api.user_facial import facial_api
 from api.historicalgraph_api import historicalgraph_api
 from api.border_email import border_email_api
 from api.border_sms import sms_api
-
-from api.leaderboard import leaderboard_api
 from api.weather_api import weather_api
-from api.vote import vote_api
-from api.teaminfo import team_member_api
+
 # database Initialization functions
 from model.user import User, initUsers
 from model.section import Section, initSections
@@ -61,7 +49,6 @@ from model.channel import Channel, initChannels
 from model.post import Post, initPosts
 from model.vote import Vote, initVotes
 from model.player import Player, initPlayers
-from model.teaminfo import TeamMember, initTeamMembers
 from model.poll import Poll, initPolls
 from model.school_classes import SchoolClass, initSchoolClasses
 from model.language import Language, initLanguages
@@ -72,7 +59,6 @@ from model.facial_encoding import FacialEncoding5c
 
 
 from model.topusers import TopUser
-from model.topinterests import TopInterest, initTopInterests
 from model.usettings import Settings  # Import the Settings model
 from model.accident import AccidentModel
 from model.cancer import CancerModel
@@ -89,24 +75,13 @@ app.register_blueprint(post_api)
 app.register_blueprint(channel_api)
 app.register_blueprint(group_api)
 app.register_blueprint(section_api)
-app.register_blueprint(vote_api)
 app.register_blueprint(weather_api)
-app.register_blueprint(school_class_api)
 app.register_blueprint(chat_api)
-app.register_blueprint(team_member_api)
-app.register_blueprint(poll_api)
-app.register_blueprint(leaderboard_api)
-app.register_blueprint(player_api)
-app.register_blueprint(language_api)
 app.register_blueprint(interests_api)
 app.register_blueprint(chat_met_api)
-app.register_blueprint(vote_met_api)
 app.register_blueprint(timelapse_api)
-app.register_blueprint(language_met_api)
 app.register_blueprint(user_met_api)
 app.register_blueprint(post_met_api)
-app.register_blueprint(poll_met_api)
-app.register_blueprint(help_api)
 app.register_blueprint(health_api)
 app.register_blueprint(accident_api)
 app.register_blueprint(cancer_api)
