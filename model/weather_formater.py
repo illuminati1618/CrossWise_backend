@@ -1,11 +1,9 @@
-# weather_formatter.py
-
 import pandas as pd
 import numpy as np
-import requests
-from sklearn.linear_model import LinearRegression
-from datetime import datetime, timedelta
-import random
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_absolute_error
+from datetime import datetime
 
 class WeatherFormatter:
     def __init__(self, file_path="datasets/san_diego_weather.csv"):
@@ -14,111 +12,53 @@ class WeatherFormatter:
         self.model = self._train_model()
 
     def _load_data(self):
-        try:
-            df = pd.read_csv(self.file_path)
-        except Exception as e:
-            raise FileNotFoundError(f"Error loading CSV: {e}")
+        df = pd.read_csv(self.file_path)
+        df['DATE'] = pd.to_datetime(df['DATE'])
+        df['Month'] = df['DATE'].dt.month
+        df['DayOfYear'] = df['DATE'].dt.dayofyear
+        df['DayOfWeek'] = df['DATE'].dt.weekday
 
-        df['Date_Time'] = pd.to_datetime(df['Date_Time'])
-        df['Hour'] = df['Date_Time'].dt.floor('H')
-
-        df.drop(columns=['Location'], errors='ignore', inplace=True)
-
-        weather_columns = ['Temperature_C', 'Humidity_pct', 'Precipitation_mm', 'Wind_Speed_kmh']
-        for col in weather_columns:
-            df[col] = pd.to_numeric(df[col], errors='coerce')
-        df.dropna(subset=weather_columns, inplace=True)
-
-        df = df.groupby('Hour', as_index=False)[weather_columns].mean()
+        df['PRCP'] = df['PRCP'].fillna(0)
+        df = df.ffill()
 
         return df
 
     def _train_model(self):
-        X = np.array([(dt.hour + dt.timetuple().tm_yday * 24) for dt in self.data['Hour']]).reshape(-1, 1)
-        y = self.data[['Temperature_C', 'Humidity_pct', 'Precipitation_mm', 'Wind_Speed_kmh']]
+        X = self.data[['Month', 'DayOfYear', 'DayOfWeek']]
+        y = self.data[['PRCP', 'TAVG', 'TMIN', 'TMAX']]  # Multi-output
 
-        model = LinearRegression()
-        model.fit(X, y)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+        model = RandomForestRegressor(n_estimators=100, random_state=42)
+        model.fit(X_train, y_train)
+
+        y_pred = model.predict(X_test)
+        mae = mean_absolute_error(y_test, y_pred)
+
         return model
 
-    def _calculate_weather_score(self, temp, humidity, precipitation, wind_speed):
-        score = 0
-        if 15 <= temp <= 30:
-            score += random.randint(1, 2)
-        if 30 <= humidity <= 70:
-            score +=  random.randint(0, 2)
-        if precipitation < 5:
-            score +=  random.randint(1, 1)
-        if wind_speed < 30:
-            score +=  random.randint(1, 2)
-        return score
+    def predict(self, input_data):
+        input_df = pd.DataFrame([input_data])
+        prediction = self.model.predict(input_df)[0]
 
-    def generate_weather_data(self, days=7):
-        weather_data = {}
-        start_date = datetime(2024, 1, 1)
-        months = [
-            "January", "February", "March", "April", "May", "June",
-            "July", "August", "September", "October", "November", "December"
-        ]
+        return {
+            'Precipitation': float(prediction[0]),
+            'AvgTemp': float(prediction[1]),
+            'MinTemp': float(prediction[2]),
+            'MaxTemp': float(prediction[3]),
+        }
 
-        for month_index, month in enumerate(months):
-            month_start_date = start_date + timedelta(days=month_index * 30)
-            weather_data[month] = {}
-
-            for day in range(days):
-                date_time = month_start_date + timedelta(days=day)
-                day_name = date_time.strftime('%A')
-                weather_data[month][day_name] = {}
-
-                for hour in range(24):
-                    date_time_hour = date_time + timedelta(hours=hour)
-                    hour_data = self.data[self.data['Hour'] == date_time_hour]
-
-                    if not hour_data.empty:
-                        row = hour_data.iloc[0]
-                        weather_data[month][day_name][str(hour)] = self._calculate_weather_score(
-                            row['Temperature_C'], row['Humidity_pct'], row['Precipitation_mm'], row['Wind_Speed_kmh']
-                        )
-                    else:
-                        time_input = np.array([[hour + date_time_hour.timetuple().tm_yday * 24]])
-                        predicted_values = self.model.predict(time_input)[0]
-                        weather_data[month][day_name][str(hour)] = self._calculate_weather_score(
-                            predicted_values[0], predicted_values[1], predicted_values[2], predicted_values[3]
-                        )
-
-        return weather_data
 
     def get_weather_score_for_datetime(self, dt):
-        dt_hour = dt.replace(minute=0, second=0, microsecond=0)
-        hour_data = self.data[self.data['Hour'] == dt_hour]
+        input_data = {
+            'Month': dt.month,
+            'DayOfYear': dt.timetuple().tm_yday,
+            'DayOfWeek': dt.weekday(),
+        }
+        return self.predict(input_data)
 
-        if not hour_data.empty:
-            row = hour_data.iloc[0]
-            return self._calculate_weather_score(
-                row['Temperature_C'], row['Humidity_pct'],
-                row['Precipitation_mm'], row['Wind_Speed_kmh']
-            )
-        else:
-            predicted_values = self.model.predict(
-                [[dt_hour.hour + dt_hour.timetuple().tm_yday * 24]]
-            )[0]
-            return self._calculate_weather_score(*predicted_values)
+# Example usage
+weather = WeatherFormatter(file_path="datasets/san_diego_weather.csv")
 
-    def get_realtime_weather_score(self):
-        url = "https://api.weather.gov/stations/KNKX/observations/latest"
-        headers = {"User-Agent": "kanhay.patil@gmail.com"}
-
-        try:
-            response = requests.get(url, headers=headers)
-            response.raise_for_status()
-            data = response.json()["properties"]
-
-            temp = data["temperature"]["value"]
-            humidity = data["relativeHumidity"]["value"]
-            precip = data["precipitationLastHour"]["value"] or 0.0
-            wind_speed = data["windSpeed"]["value"]
-
-            return self._calculate_weather_score(temp, humidity, precip, wind_speed)
-        except Exception as e:
-            print(f"Failed to fetch real-time weather data: {e}")
-            return None
+result = weather.get_weather_score_for_datetime(datetime(2025, 5, 19))
+print(result)
