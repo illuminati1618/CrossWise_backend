@@ -47,6 +47,7 @@ from api.timelapse import timelapse_api
 from api.user_facial import facial_api
 from api.historicalgraph_api import historicalgraph_api
 from api.border_email import border_email_api
+from api.border_sms import sms_api
 
 from api.leaderboard import leaderboard_api
 from api.weather_api import weather_api
@@ -115,6 +116,7 @@ app.register_blueprint(border_api)
 app.register_blueprint(facial_api)
 app.register_blueprint(historicalgraph_api)  # Register the new historical graph API
 app.register_blueprint(border_email_api)
+app.register_blueprint(sms_api)
 # Tell Flask-Login the view function name of your login route
 login_manager.login_view = "login"
 
