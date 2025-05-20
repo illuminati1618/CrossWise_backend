@@ -9,20 +9,15 @@ class BorderAPI:
     class _Predict(Resource):
         def post(self):
             data = request.get_json()
+            '''
             required_fields = ['bwt_day', 'time_slot', 'month', 'weather_score']
 
             if not all(field in data for field in required_fields):
                 return {"error": "Missing required fields", "required_fields": required_fields}, 400
-
-            wait_data = {
-                "bwt_day": data["bwt_day"],
-                "time_slot": data["time_slot"],
-                "month": int(data["month"]),
-                "weather_score": data["weather_score"]
-            }
+            '''
 
             borderModel = BorderWaitTimeModel.get_instance()
-            response = borderModel.predict(wait_data)
+            response = borderModel.predict({"bwt_day": 2, "time_slot": 15})
 
             return jsonify(response)
 
