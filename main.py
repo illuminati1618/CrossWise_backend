@@ -342,7 +342,6 @@ def generate_data():
     initPosts()
     initChats()
     initVotes()
-    initTeamMembers()
     initSchoolClasses()
     initPlayers()
     initLanguages()
