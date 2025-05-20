@@ -1,9 +1,10 @@
-from sklearn.ensemble import HistGradientBoostingRegressor
+from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
+from sklearn.preprocessing import OneHotEncoder
 import pandas as pd
 import numpy as np
-import json
 import os
+import json
 
 class BorderWaitTimeModel:
     _instance = None
@@ -11,58 +12,34 @@ class BorderWaitTimeModel:
     def __init__(self):
         self.model = None
         self.dt = None
-        self.features = []
+        self.features = ['bwt_day', 'time_slot']
         self.target = 'pv_time_avg'
+        self.encoder = OneHotEncoder(handle_unknown='ignore')
         self._load_data()
 
     def _load_data(self):
-        dataset_folder = "datasets"
-        months_mapping = {
-            "january": 1, "february": 2, "march": 3, "april": 4, "may": 5, "june": 6,
-            "july": 7, "august": 8, "september": 9, "october": 10, "november": 11, "december": 12
-        }
-
-        with open("weather.json", 'r') as wf:
-            weather_data = json.load(wf)
-
-        data_list = []
-
-        for filename in os.listdir(dataset_folder):
+        # Load all JSON files from the datasets directory
+        data_dir = "datasets"
+        all_data = []
+        for filename in os.listdir(data_dir):
             if filename.endswith(".json"):
-                file_path = os.path.join(dataset_folder, filename)
-                month_name = filename.split(".")[0].lower()
+                with open(os.path.join(data_dir, filename), 'r') as f:
+                    content = json.load(f)
+                    all_data.extend(content["wait_times"])
 
-                if month_name in months_mapping:
-                    with open(file_path, 'r') as f:
-                        data = json.load(f)
-                        for entry in data['wait_times']:
-                            entry['month'] = months_mapping[month_name]
-                            day_name = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][int(entry['bwt_day'])]
-                            time_slot = str(entry['time_slot'])
-
-                            weather_score = weather_data.get(
-                                month_name.capitalize(),
-                                {}
-                            ).get(day_name, {}).get(time_slot, None)
-
-                            if weather_score is not None:
-                                entry['weather_score'] = weather_score
-                                data_list.append(entry)
-
-        df = pd.DataFrame(data_list)
-        print("Loaded columns:", df.columns.tolist())
-
-        categorical_features = ['bwt_day', 'time_slot', 'month']
-        for col in categorical_features:
-            df[col] = df[col].astype('category')
-
+        df = pd.DataFrame(all_data)
+        df = df[self.features + [self.target]]
         df.dropna(inplace=True)
 
-        self.features = [col for col in df.columns if col != self.target]
+        # Convert features to integer
+        df['bwt_day'] = df['bwt_day'].astype(int)
+        df['time_slot'] = df['time_slot'].astype(int)
+        df[self.target] = df[self.target].astype(float)
+
         X = df[self.features]
         y = df[self.target]
 
-        self.model = HistGradientBoostingRegressor()
+        self.model = LinearRegression()
         self.model.fit(X, y)
 
         self.dt = DecisionTreeRegressor()
@@ -74,23 +51,15 @@ class BorderWaitTimeModel:
             cls._instance = cls()
         return cls._instance
 
-    def predict(self, wait_data):
-        wait_df = pd.DataFrame([wait_data])
+    def predict(self, input_data):
+        df = pd.DataFrame([input_data])
+        df['bwt_day'] = df['bwt_day'].astype(int)
+        df['time_slot'] = df['time_slot'].astype(int)
 
-        for col in ['bwt_day', 'time_slot', 'month']:
-            wait_df[col] = pd.Series(wait_df[col], dtype='category')
-
-        for col in self.features:
-            if col not in wait_df.columns:
-                wait_df[col] = 0
-
-        wait_df = wait_df[self.features]
-
-        prediction = self.model.predict(wait_df)[0]
-        prediction = max(0, prediction)
-
-        return {'predicted_wait_time': prediction}
+        linear_pred = float(self.model.predict(df)[0])
+        tree_pred = float(self.dt.predict(df)[0])
+        return {'linear_model_prediction': linear_pred, 'tree_model_prediction': tree_pred}
 
     def feature_importance(self):
-        importances = self.dt.feature_importances
+        importances = self.dt.feature_importances_
         return {feature: importance for feature, importance in zip(self.features, importances)}
