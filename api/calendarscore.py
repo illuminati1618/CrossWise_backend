@@ -16,8 +16,8 @@ class BorderCalendarScore:
     
     # Traffic thresholds for classification (in minutes)
     TRAFFIC_THRESHOLDS = {
-        'pv_time_avg': {'green': 60, 'yellow': 120},  # Personal Vehicle
-        'ped_time_avg': {'green': 20, 'yellow': 40}   # Pedestrian
+        'pv_time_avg': {'green': 100, 'yellow': 160},  # Personal Vehicle (adjusted much higher)
+        'ped_time_avg': {'green': 35, 'yellow': 60}    # Pedestrian (adjusted much higher)
     }
     
     def __init__(self, monthly_data_dir, events_file):
@@ -173,12 +173,19 @@ class BorderCalendarScore:
                 print(f"Warning: Could not parse date {date_str}")
                 return None
     
-    def calculate_traffic_score(self, day_of_week, month_name=None, is_event_day=False):
+    def calculate_traffic_score(self, day_of_week, month_name=None, is_event_day=False, event_names=None):
         """
         Calculate a traffic score for a given day of week, optionally considering
         if it's an event day and using month-specific data if available.
         
-        Returns a score dictionary with different metrics and time slots.
+        Args:
+            day_of_week: Day of week (0-6)
+            month_name: Name of the month (optional)
+            is_event_day: Whether this is an event day
+            event_names: List of event names (used to adjust impact factor)
+            
+        Returns:
+            A score dictionary with different metrics and time slots.
         """
         if day_of_week is None or day_of_week not in self.day_of_week_traffic_patterns:
             return None
@@ -193,11 +200,50 @@ class BorderCalendarScore:
                 'ped_time': metrics['ped_time_avg']
             }
         
-        # Apply event day adjustment (simplified model - increase by 20%)
-        if is_event_day:
+        # Apply event day adjustment with variable impact factor
+        if is_event_day and event_names:
+            # Base impact factor - adjust based on event characteristics
+            impact_factor = 1.02  # Default very small increase
+            
+            # Adjust impact based on number of events on the same day
+            if len(event_names) > 2:
+                impact_factor += 0.03  # Multiple events add more impact
+            if len(event_names) > 5:
+                impact_factor += 0.02  # Many events add even more impact
+            
+            # Certain keywords in event names suggest higher traffic impact
+            high_impact_keywords = ['festival', 'fair', 'championship', 'concert', 'parade']
+            medium_impact_keywords = ['race', 'marathon', 'show', 'exhibition']
+            low_impact_keywords = ['film', 'meeting', 'tour', 'lecture', 'workshop']
+            
+            keyword_count = {'high': 0, 'medium': 0, 'low': 0}
+            
+            for event in event_names:
+                event_lower = event.lower()
+                
+                # Check for high impact keywords
+                if any(keyword in event_lower for keyword in high_impact_keywords):
+                    keyword_count['high'] += 1
+                # Check for medium impact keywords
+                elif any(keyword in event_lower for keyword in medium_impact_keywords):
+                    keyword_count['medium'] += 1
+                # Check for low impact keywords
+                elif any(keyword in event_lower for keyword in low_impact_keywords):
+                    keyword_count['low'] += 1
+            
+            # Apply keyword impacts - with diminishing returns for multiple instances
+            impact_factor += min(keyword_count['high'] * 0.04, 0.12)  # Max 12% from high impact
+            impact_factor += min(keyword_count['medium'] * 0.02, 0.06)  # Max 6% from medium impact
+            
+            # Some events might actually reduce traffic (people staying home to watch)
+            impact_factor -= min(keyword_count['low'] * 0.01, 0.03)  # Max 3% reduction
+            
+            # Apply the calculated impact factor (ensure it doesn't go below 1.0)
+            impact_factor = max(1.0, impact_factor)
+            
             for time_slot in scores:
-                scores[time_slot]['pv_time'] *= 1.2
-                scores[time_slot]['ped_time'] *= 1.2
+                scores[time_slot]['pv_time'] *= impact_factor
+                scores[time_slot]['ped_time'] *= impact_factor
         
         return scores
     
@@ -265,7 +311,7 @@ class BorderCalendarScore:
             
             if day_of_week is not None:
                 traffic_score = self.calculate_traffic_score(
-                    day_of_week, month_name, is_event_day=True
+                    day_of_week, month_name, is_event_day=True, event_names=events
                 )
                 
                 if traffic_score:
@@ -445,7 +491,23 @@ if __name__ == "__main__":
         for hour in [8, 12, 17]:  # Morning, noon, evening
             if str(hour) in data['classification']:
                 cls = data['classification'][str(hour)]['overall_class']
-                print(f"  Hour {hour}: {cls.upper()}")
+                pv_class = data['classification'][str(hour)]['pv_class']
+                ped_class = data['classification'][str(hour)]['ped_class']
+                pv_time = data['traffic_score'][str(hour)]['pv_time']
+                ped_time = data['traffic_score'][str(hour)]['ped_time']
+                print(f"  Hour {hour}: {cls.upper()} (PV: {pv_time:.1f} min/{pv_class.upper()}, Ped: {ped_time:.1f} min/{ped_class.upper()})")
+        
+        # Show impact factor calculation
+        day_of_week = calendar_model.get_day_of_week(date_str)
+        month_name = calendar_model.get_month_name(date_str)
+        base_score = calendar_model.calculate_traffic_score(day_of_week, month_name, is_event_day=False)
+        event_score = data['traffic_score']
+        
+        # Calculate the average impact factor
+        if '8' in base_score and '8' in event_score:
+            pv_impact = event_score['8']['pv_time'] / base_score['8']['pv_time']
+            ped_impact = event_score['8']['ped_time'] / base_score['8']['ped_time']
+            print(f"  Calculated Impact Factor: {pv_impact:.2f}x increase in traffic")
         
         sample_count += 1
     
@@ -453,19 +515,38 @@ if __name__ == "__main__":
     calendar_data = calendar_model.generate_calendar_data()
     print(f"\nGenerated calendar data for {len(calendar_data)} dates")
     
+    # Count classifications
+    classifications = {'green': 0, 'yellow': 0, 'red': 0}
+    for date_data in calendar_data.values():
+        classifications[date_data['classification']] += 1
+    
+    total = sum(classifications.values())
+    print("\n--- Calendar Classification Distribution ---")
+    for cls, count in classifications.items():
+        percentage = (count / total) * 100 if total > 0 else 0
+        print(f"{cls.upper()}: {count} days ({percentage:.1f}%)")
+    
     # Event impact analysis
     print("\n--- Event Impact Analysis ---")
     event_analysis = calendar_model.get_event_impact_analysis()
     
-    sample_count = 0
-    for event, analysis in event_analysis.items():
-        if sample_count >= 5:
-            break
-        
-        print(f"\nEvent: {event}")
-        print(f"Impact: {analysis['impact'].upper()}")
-        print(f"Classification Distribution:")
-        for cls, pct in analysis['classifications'].items():
-            print(f"  {cls.upper()}: {pct:.1%}")
-        
-        sample_count += 1
+    # Summarize event impacts
+    impact_counts = {'low': 0, 'medium': 0, 'high': 0}
+    for analysis in event_analysis.values():
+        impact_counts[analysis['impact']] += 1
+    
+    print("\nEvent Impact Summary:")
+    total_events = sum(impact_counts.values())
+    for impact, count in impact_counts.items():
+        percentage = (count / total_events) * 100 if total_events > 0 else 0
+        print(f"{impact.upper()} Impact: {count} events ({percentage:.1f}%)")
+    
+    # Sample events with different impacts
+    print("\nSample Events by Impact:")
+    for impact in ['low', 'medium', 'high']:
+        print(f"\n{impact.upper()} Impact Events:")
+        count = 0
+        for event, analysis in event_analysis.items():
+            if analysis['impact'] == impact and count < 3:
+                print(f"- {event}")
+                count += 1
