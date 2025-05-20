@@ -1,0 +1,59 @@
+Loaded january data
+Loaded february data
+Loaded march data
+Loaded april data
+Warning: may.json not found
+Warning: june.json not found
+Warning: july.json not found
+Warning: august.json not found
+Warning: september.json not found
+Warning: october.json not found
+Warning: november.json not found
+Warning: december.json not found
+Loaded 2246 events
+Traffic patterns analyzed
+
+--- Sample Event Date Traffic Scores ---
+
+Date: 8/25/2024
+Events: Bike the Bay, Secret Society of Adultologists: Wonderland, Little Italy Summer Film Festival, 18th Annual LeucadiART Walk, San Diego International Kids' Film Festival, Velour: A Drag Spectacular at La Jolla Playhouse
+Overall Classification: YELLOW
+Hourly classifications (sample):
+
+Date: 9/13/2024
+Events: San Diego Bayfair, Secret Society of Adultologists: Wonderland, FilmOut San Diego LGBT Film Festival, Velour: A Drag Spectacular at La Jolla Playhouse
+Overall Classification: YELLOW
+Hourly classifications (sample):
+
+Date: 9/14/2024
+Events: San Diego Bayfair, ENVZN24 Urban Art Takeover , Secret Society of Adultologists: Wonderland, Old Town San Diego Fiestas Patrias, Solento Surf Festival, FilmOut San Diego LGBT Film Festival, Velour: A Drag Spectacular at La Jolla Playhouse
+Overall Classification: RED
+Hourly classifications (sample):
+
+Generated calendar data for 366 dates
+
+--- Calendar Classification Distribution ---
+GREEN: 0 days (0.0%)
+YELLOW: 357 days (97.5%)
+RED: 9 days (2.5%)
+
+--- Event Impact Analysis ---
+
+Event Impact Summary:
+LOW Impact: 0 events (0.0%)
+MEDIUM Impact: 179 events (86.1%)
+HIGH Impact: 29 events (13.9%)
+
+Sample Events by Impact:
+
+LOW Impact Events:
+
+MEDIUM Impact Events:
+- Bike the Bay
+- Secret Society of Adultologists: Wonderland
+- Little Italy Summer Film Festival
+
+HIGH Impact Events:
+- San Diego Bayfair
+- ENVZN24 Urban Art Takeover 
+- Old Town San Diego Fiestas Patrias

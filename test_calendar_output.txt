@@ -1,0 +1,93 @@
+Initializing the BorderCalendarScore model...
+Loaded january data
+Loaded february data
+Loaded march data
+Loaded april data
+Loaded may data
+Loaded june data
+Loaded july data
+Warning: august.json not found
+Warning: september.json not found
+Warning: october.json not found
+Warning: november.json not found
+Warning: december.json not found
+Loaded 2246 events
+Traffic patterns analyzed
+Scoring event dates...
+Testing 5 specific dates...
+
+=== Testing Specific Dates ===
+
+Date: 7/4/2024 (Thursday)
+Events: The Spirit of the Fourth, An Old Fashioned Fourth of July & Fireworks, El Cajon 4th of July Fireworks, Red, White & Boom, Santee Salutes - Fourth of July Celebration, TGIF Concerts in the Park, 4th of July Run & Ride, Old Town Fourth of July, Santee Summer Concert Series, Scripps Ranch 4th of July Parade, Crown City Classic 4th of July Race, Del Mar Summer Twilight Concerts, Vista Independence Day Celebration, Sundays at Six Concerts, Lake Murray Fireworks and Musicfest, Independence Day Fireworks in Imperial Beach
+Overall Classification: YELLOW
+Traffic by hour (sample):
+
+Date: 9/14/2024 (Saturday)
+Events: San Diego Bayfair, ENVZN24 Urban Art Takeover , Secret Society of Adultologists: Wonderland, Old Town San Diego Fiestas Patrias, Solento Surf Festival, FilmOut San Diego LGBT Film Festival, Velour: A Drag Spectacular at La Jolla Playhouse
+Overall Classification: RED
+Traffic by hour (sample):
+
+Date: 12/25/2024 (Wednesday)
+Events: Coastal Christmas Del Mar, Viejas Outlet Center Ice Rink, Skating by the Sea®
+Overall Classification: YELLOW
+Traffic by hour (sample):
+
+Date: 6/15/2024 (Saturday)
+Events: United States Police & Fire Championships, Annual Switchfoot BRO-AM, San Diego Wooden Boat Festival, 26th Annual Barrio Logan Grand Prix , 2024 USA Surfing Championships, Santee Summer Concert Series
+Overall Classification: RED
+Traffic by hour (sample):
+
+Date: 11/28/2024 (Thursday)
+Events: Fallbrook Thanksgiving Day Turkey Trot, Book your Holiday Party on a 60' Luxury Catamaran, Father Joe's Villages Thanksgiving Day 5K Run & Walk, Viejas Outlet Center Ice Rink, Skating by the Sea®, Coronado 5K Turkey Trot, O'side Turkey Trot
+Overall Classification: YELLOW
+Traffic by hour (sample):
+Testing 5 specific events...
+
+=== Testing Event Impact ===
+
+Event: San Diego Bayfair
+Impact: HIGH
+Classification Distribution:
+  GREEN: 0.0%
+  YELLOW: 33.3%
+  RED: 66.7%
+Occurs on 6 dates: 9/13/2024, 9/13/2025, 9/14/2024...
+
+Event: CONCACAF W Gold Cup
+Impact: MEDIUM
+Classification Distribution:
+  GREEN: 0.0%
+  YELLOW: 83.8%
+  RED: 16.2%
+Occurs on 37 dates: 2/21/2024, 2/21/2025, 2/22/2024...
+
+Event: Fleet Week San Diego 2024
+Impact: MEDIUM
+Classification Distribution:
+  GREEN: 0.0%
+  YELLOW: 63.6%
+  RED: 36.4%
+Occurs on 11 dates: 11/1/2024, 11/10/2024, 11/11/2024...
+
+Event: Little Italy Summer Film Festival
+Impact: MEDIUM
+Classification Distribution:
+  GREEN: 0.0%
+  YELLOW: 65.5%
+  RED: 34.5%
+Occurs on 58 dates: 8/10/2024, 8/10/2025, 8/11/2024...
+
+Event: The Spirit of the Fourth
+Impact: MEDIUM
+Classification Distribution:
+  GREEN: 0.0%
+  YELLOW: 50.0%
+  RED: 50.0%
+Occurs on 2 dates: 7/4/2024, 7/4/2025...
+Tests completed successfully
+
+=== Calendar Classification Distribution ===
+GREEN: 0 days (0.0%)
+YELLOW: 306 days (83.6%)
+RED: 60 days (16.4%)

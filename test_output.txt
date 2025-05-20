@@ -1,0 +1,70 @@
+Loaded january data
+Loaded february data
+Loaded march data
+Loaded april data
+Warning: may.json not found
+Warning: june.json not found
+Warning: july.json not found
+Warning: august.json not found
+Warning: september.json not found
+Warning: october.json not found
+Warning: november.json not found
+Warning: december.json not found
+Loaded 2246 events
+Traffic patterns analyzed
+
+--- Sample Event Date Traffic Scores ---
+
+Date: 8/25/2024
+Events: Bike the Bay, Secret Society of Adultologists: Wonderland, Little Italy Summer Film Festival, 18th Annual LeucadiART Walk, San Diego International Kids' Film Festival, Velour: A Drag Spectacular at La Jolla Playhouse
+Overall Classification: RED
+Hourly classifications (sample):
+
+Date: 9/13/2024
+Events: San Diego Bayfair, Secret Society of Adultologists: Wonderland, FilmOut San Diego LGBT Film Festival, Velour: A Drag Spectacular at La Jolla Playhouse
+Overall Classification: RED
+Hourly classifications (sample):
+
+Date: 9/14/2024
+Events: San Diego Bayfair, ENVZN24 Urban Art Takeover , Secret Society of Adultologists: Wonderland, Old Town San Diego Fiestas Patrias, Solento Surf Festival, FilmOut San Diego LGBT Film Festival, Velour: A Drag Spectacular at La Jolla Playhouse
+Overall Classification: RED
+Hourly classifications (sample):
+
+Generated calendar data for 366 dates
+
+--- Event Impact Analysis ---
+
+Event: Bike the Bay
+Impact: HIGH
+Classification Distribution:
+  GREEN: 0.0%
+  YELLOW: 0.0%
+  RED: 100.0%
+
+Event: Secret Society of Adultologists: Wonderland
+Impact: HIGH
+Classification Distribution:
+  GREEN: 0.0%
+  YELLOW: 16.4%
+  RED: 83.6%
+
+Event: Little Italy Summer Film Festival
+Impact: HIGH
+Classification Distribution:
+  GREEN: 0.0%
+  YELLOW: 6.9%
+  RED: 93.1%
+
+Event: 18th Annual LeucadiART Walk
+Impact: HIGH
+Classification Distribution:
+  GREEN: 0.0%
+  YELLOW: 0.0%
+  RED: 100.0%
+
+Event: San Diego International Kids' Film Festival
+Impact: HIGH
+Classification Distribution:
+  GREEN: 0.0%
+  YELLOW: 0.0%
+  RED: 100.0%
