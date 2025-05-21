@@ -27,3 +27,6 @@ instance/data.json.*.bak
 instance/volumes/user_management.db
 instance/volumes/user_management_bak.db
 
+# Ignore all videos
+data/videos/*
+
