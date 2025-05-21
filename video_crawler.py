@@ -48,4 +48,4 @@ if __name__ == "__main__":
         backfill_last_2_hours()
     while True:
         download_latest()
-        time.sleep(60)
+        time.sleep(29)
