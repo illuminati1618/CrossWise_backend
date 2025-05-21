@@ -10,4 +10,15 @@ services:
       - "3167:3167"
     volumes:
       - ./instance:/instance
+      - ./data/videos:/data/videos
+    restart: unless-stopped
+
+  crawler:
+    image: crosswise
+    build: .
+    command: python3 video_crawler.py
+    env_file:
+      - .env
+    volumes:
+      - ./data/videos:/data/videos
     restart: unless-stopped

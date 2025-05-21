@@ -4,6 +4,8 @@ from moviepy import *
 from model.timelapse import TimelapseModel
 from flask import Response
 import requests
+import os
+from datetime import datetime
 
 timelapse_api = Blueprint('timelapse_api', __name__, url_prefix='/api/timelapse')
 api = Api(timelapse_api)
@@ -36,3 +38,36 @@ class TimelapseAPI:
             return Response(resp.iter_content(8192), content_type=resp.headers.get("Content-Type", "video/mp4"))
         except Exception as e:
             return {"error": str(e)}, 500
+        
+    @timelapse_api.route('/history')
+    def get_stored_videos():
+        folder = os.path.join(os.path.dirname(__file__), '..', 'data', 'videos')  # <- use relative path
+        folder = os.path.abspath(folder)  # 
+        files = sorted([f for f in os.listdir(folder) if f.endswith(".mp4")])
+        videos = []
+
+        for f in files:
+            timestamp = f.replace(".mp4", "")
+            try:
+                dt_obj = datetime.strptime(timestamp, "%Y_%m_%d_%H_%M")
+                videos.append({
+                    "timeLabel": dt_obj.strftime("%H:%M"),
+                    "timeCode": timestamp,
+                    "url": f"/api/timelapse/local_video?file={f}"
+                })
+            except:
+                continue
+
+        return jsonify(videos)
+    
+    @timelapse_api.route('/local_video')
+    def local_video():
+        file = request.args.get("file")
+        folder = os.path.join(os.path.dirname(__file__), '..', 'data', 'videos')
+        folder = os.path.abspath(folder)
+        full_path = os.path.join(folder, file)
+
+        if not os.path.isfile(full_path):
+            return {"error": "File not found"}, 404
+
+        return send_file(full_path, mimetype="video/mp4")
