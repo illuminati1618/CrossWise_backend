@@ -1,0 +1,51 @@
+2025-05-22 10:00:28,779 - border_checker - INFO - 🗄️ Initializing database...
+2025-05-22 10:00:28,783 - border_checker - INFO - ✅ Database initialization completed
+2025-05-22 10:00:28,783 - border_checker - INFO - 🎬 Starting border checker thread...
+2025-05-22 10:00:28,784 - border_checker - INFO - 🚀 Border checker worker starting up...
+2025-05-22 10:00:28,784 - border_checker - INFO - ✅ Border checker thread started successfully
+2025-05-22 10:00:28,785 - border_checker - INFO - ⚙️ Configuration - Check interval: 300 seconds (5.0 minutes)
+2025-05-22 10:00:28,788 - border_checker - INFO - 🗄️ Database path: instance/border_notifications.db
+2025-05-22 10:00:28,789 - border_checker - INFO - 🔄 === Starting border wait time check cycle #1 at 2025-05-22 10:00:28 ===
+2025-05-22 10:00:28,791 - border_checker - INFO - 📡 Step 1: Fetching current border wait times...
+2025-05-22 10:00:28,791 - border_checker - INFO - 🌐 Fetching border wait times from CBP API...
+2025-05-22 10:00:28,805 - werkzeug - WARNING -  * Debugger is active!
+2025-05-22 10:00:28,808 - werkzeug - INFO -  * Debugger PIN: 106-169-666
+2025-05-22 10:00:29,205 - border_checker - INFO - ✅ Successfully received API response with 80 ports
+2025-05-22 10:00:29,205 - border_checker - INFO - 📊 Current wait times - Standard: 80min, SENTRI: 15min, Pedestrian: 20min
+2025-05-22 10:00:29,206 - border_checker - INFO - ✅ Step 2: Port data received, checking notifications...
+2025-05-22 10:00:29,207 - border_checker - INFO - 📋 Found 1 active notifications in database
+2025-05-22 10:00:29,207 - border_checker - INFO - 🔍 Checking 1 active notifications against current wait times
+2025-05-22 10:00:29,207 - border_checker - INFO - 🎯 Condition MET: standard wait time 80 minutes is below threshold 200
+2025-05-22 10:00:29,207 - border_checker - INFO - 📧 Preparing to send email notification 1
+2025-05-22 10:00:29,480 - googleapiclient.discovery_cache - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-05-22 10:00:29,991 - border_checker - INFO - ✅ Email notification sent successfully to yashp.d39@gmail.com for Standard Vehicles
+2025-05-22 10:00:29,992 - border_checker - INFO - 🔔 1 notification condition(s) met and processed
+2025-05-22 10:00:29,993 - border_checker - INFO - ✅ === Completed border wait time check cycle #1 in 1.20 seconds ===
+2025-05-22 10:00:29,993 - border_checker - INFO - ⏰ Sleeping for 300 seconds until next check...
+2025-05-22 10:00:29,993 - border_checker - INFO - ⏰ Next check scheduled for: 2025-05-22 10:05:29
+2025-05-22 10:00:39,136 - werkzeug - INFO -  * Detected change in '/home/yashisgay/crosswise/CrossWise_backend/api/border_checker.py', reloading
+2025-05-22 10:00:49,466 - border_checker - INFO - 🗄️ Initializing database...
+2025-05-22 10:00:49,470 - border_checker - INFO - ✅ Database initialization completed
+2025-05-22 10:00:49,471 - border_checker - INFO - 🎬 Starting border checker thread...
+2025-05-22 10:00:49,471 - border_checker - INFO - 🚀 Border checker worker starting up...
+2025-05-22 10:00:49,472 - border_checker - INFO - ✅ Border checker thread started successfully
+2025-05-22 10:00:49,472 - border_checker - INFO - ⚙️ Configuration - Check interval: 300 seconds (5.0 minutes)
+2025-05-22 10:00:49,473 - border_checker - INFO - 🗄️ Database path: instance/border_notifications.db
+2025-05-22 10:00:49,473 - border_checker - INFO - 🔄 === Starting border wait time check cycle #1 at 2025-05-22 10:00:49 ===
+2025-05-22 10:00:49,473 - border_checker - INFO - 📡 Step 1: Fetching current border wait times...
+2025-05-22 10:00:49,474 - border_checker - INFO - 🌐 Fetching border wait times from CBP API...
+2025-05-22 10:00:49,486 - werkzeug - WARNING -  * Debugger is active!
+2025-05-22 10:00:49,487 - werkzeug - INFO -  * Debugger PIN: 106-169-666
+2025-05-22 10:00:49,912 - border_checker - INFO - ✅ Successfully received API response with 80 ports
+2025-05-22 10:00:49,913 - border_checker - INFO - 📊 Current wait times - Standard: 80min, SENTRI: 15min, Pedestrian: 20min
+2025-05-22 10:00:49,913 - border_checker - INFO - ✅ Step 2: Port data received, checking notifications...
+2025-05-22 10:00:49,914 - border_checker - INFO - 📋 Found 1 active notifications in database
+2025-05-22 10:00:49,914 - border_checker - INFO - 🔍 Checking 1 active notifications against current wait times
+2025-05-22 10:00:49,914 - border_checker - INFO - 🎯 Condition MET: standard wait time 80 minutes is below threshold 200
+2025-05-22 10:00:49,915 - border_checker - INFO - 📧 Preparing to send email notification 1
+2025-05-22 10:00:50,186 - googleapiclient.discovery_cache - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-05-22 10:00:50,748 - border_checker - INFO - ✅ Email notification sent successfully to yashp.d39@gmail.com for Standard Vehicles
+2025-05-22 10:00:50,749 - border_checker - INFO - 🔔 1 notification condition(s) met and processed
+2025-05-22 10:00:50,749 - border_checker - INFO - ✅ === Completed border wait time check cycle #1 in 1.28 seconds ===
+2025-05-22 10:00:50,749 - border_checker - INFO - ⏰ Sleeping for 300 seconds until next check...
+2025-05-22 10:00:50,750 - border_checker - INFO - ⏰ Next check scheduled for: 2025-05-22 10:05:50
