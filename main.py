@@ -42,6 +42,7 @@ from api.border_sms import sms_api
 from api.weather_api import weather_api
 from api.border_feedback import border_feedback_api
 from api.contact import contact_api
+from api.traffic_report import traffic_report_api
 
 # database Initialization functions
 from model.user import User, initUsers
@@ -59,6 +60,7 @@ from model.help_request import HelpRequest, initHelpRequests
 from model.timelapse import TimelapseModel
 from model.facial_encoding import FacialEncoding5c
 from model.border_feedback import BorderFeedback, initBorderFeedbacks
+from model.traffic_report import TrafficReport, initTrafficReports
 
 from model.topusers import TopUser
 from model.usettings import Settings  # Import the Settings model
@@ -96,6 +98,7 @@ app.register_blueprint(border_email_api)
 app.register_blueprint(sms_api)
 app.register_blueprint(border_feedback_api)
 app.register_blueprint(contact_api)
+app.register_blueprint(traffic_report_api)
 # Tell Flask-Login the view function name of your login route
 login_manager.login_view = "login"
 
@@ -352,6 +355,7 @@ def generate_data():
     initPolls()
     initHelpRequests()
     initBorderFeedbacks()
+    initTrafficReports()
     
 # Backup the old database
 def backup_database(db_uri, backup_uri):
@@ -380,6 +384,7 @@ def extract_data():
         data['top_interests'] = [top_interest.read() for top_interest in TopInterest.query.all()]
         data['polls'] = [poll.read() for poll in Poll.query.all()]
         data['border_feedback'] = [poll.read() for poll in Poll.query.all()]
+        data['traffic_report'] = [poll.read() for poll in Poll.query.all()]
     return data
 
 # Save extracted data to JSON files
@@ -394,7 +399,7 @@ def save_data_to_json(data, directory='backup'):
 # Load data from JSON files
 def load_data_from_json(directory='backup'):
     data = {}
-    for table in ['polls', 'users', 'sections', 'groups', 'channels', 'school_classes', 'votes', 'team_members', 'top_interests', 'chat', 'languages', 'border_feedback']:
+    for table in ['polls', 'users', 'sections', 'groups', 'channels', 'school_classes', 'votes', 'team_members', 'top_interests', 'chat', 'languages', 'border_feedback', 'traffic_report']:
         with open(os.path.join(directory, f'{table}.json'), 'r') as f:
             data[table] = json.load(f)
     return data
@@ -413,7 +418,8 @@ def restore_data(data):
         # _ = Player.restore(data['player'])
         _ = TopInterest.restore(data['top_interests'])
         _ = Language.restore(data['languages'])
-        _ = BorderFeedback.restore(data['border_feedbacks'])        
+        _ = BorderFeedback.restore(data['border_feedbacks'])
+        _ = TrafficReport.restore(data['traffic_reports'])         
     print("Data restored to the new database.")
 
 # Define a command to backup data
