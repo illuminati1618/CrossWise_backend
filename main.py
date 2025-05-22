@@ -41,6 +41,7 @@ from api.border_email import border_email_api
 from api.border_sms import sms_api
 from api.weather_api import weather_api
 from api.border_feedback import border_feedback_api
+from api.contact import contact_api
 
 # database Initialization functions
 from model.user import User, initUsers
@@ -94,6 +95,7 @@ app.register_blueprint(historicalgraph_api)  # Register the new historical graph
 app.register_blueprint(border_email_api)
 app.register_blueprint(sms_api)
 app.register_blueprint(border_feedback_api)
+app.register_blueprint(contact_api)
 # Tell Flask-Login the view function name of your login route
 login_manager.login_view = "login"
 
