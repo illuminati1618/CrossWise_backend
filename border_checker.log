@@ -49,3 +49,25 @@
 2025-05-22 10:00:50,749 - border_checker - INFO - ✅ === Completed border wait time check cycle #1 in 1.28 seconds ===
 2025-05-22 10:00:50,749 - border_checker - INFO - ⏰ Sleeping for 300 seconds until next check...
 2025-05-22 10:00:50,750 - border_checker - INFO - ⏰ Next check scheduled for: 2025-05-22 10:05:50
+2025-05-22 10:02:05,835 - werkzeug - INFO - 127.0.0.1 - - [22/May/2025 10:02:05] "GET /api/proxy/waittimes HTTP/1.1" 200 -
+2025-05-22 10:06:16,769 - border_checker - INFO - 🔄 === Starting border wait time check cycle #2 at 2025-05-22 10:06:16 ===
+2025-05-22 10:06:16,769 - border_checker - INFO - 📡 Step 1: Fetching current border wait times...
+2025-05-22 10:06:16,769 - border_checker - INFO - 🌐 Fetching border wait times from CBP API...
+2025-05-22 10:06:17,199 - border_checker - INFO - ✅ Successfully received API response with 80 ports
+2025-05-22 10:06:17,199 - border_checker - INFO - 📊 Current wait times - Standard: 80min, SENTRI: 15min, Pedestrian: 20min
+2025-05-22 10:06:17,200 - border_checker - INFO - ✅ Step 2: Port data received, checking notifications...
+2025-05-22 10:06:17,202 - border_checker - INFO - 📋 Found 1 active notifications in database
+2025-05-22 10:06:17,202 - border_checker - INFO - 🔍 Checking 1 active notifications against current wait times
+2025-05-22 10:06:17,202 - border_checker - INFO - 🎯 Condition MET: standard wait time 80 minutes is below threshold 200
+2025-05-22 10:06:17,202 - border_checker - INFO - ⏭️ Skipping notification 1 - already sent recently
+2025-05-22 10:06:17,203 - border_checker - INFO - 🔔 1 notification condition(s) met and processed
+2025-05-22 10:06:17,203 - border_checker - INFO - ✅ === Completed border wait time check cycle #2 in 0.43 seconds ===
+2025-05-22 10:06:17,203 - border_checker - INFO - ⏰ Sleeping for 300 seconds until next check...
+2025-05-22 10:06:17,203 - border_checker - INFO - ⏰ Next check scheduled for: 2025-05-22 10:11:17
+2025-05-22 10:07:04,471 - werkzeug - INFO - 127.0.0.1 - - [22/May/2025 10:07:04] "GET /api/proxy/waittimes HTTP/1.1" 200 -
+2025-05-22 10:08:42,624 - googleapiclient.discovery_cache - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-05-22 10:08:43,187 - werkzeug - INFO - 127.0.0.1 - - [22/May/2025 10:08:43] "POST /api/border_notifications/create_sms HTTP/1.1" 200 -
+2025-05-22 10:08:45,017 - werkzeug - INFO - 127.0.0.1 - - [22/May/2025 10:08:45] "GET /api/border_email/notifications HTTP/1.1" 200 -
+2025-05-22 10:09:26,927 - googleapiclient.discovery_cache - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-05-22 10:09:27,575 - werkzeug - INFO - 127.0.0.1 - - [22/May/2025 10:09:27] "POST /api/border_email/notifications HTTP/1.1" 200 -
+2025-05-22 10:09:31,962 - werkzeug - INFO - 127.0.0.1 - - [22/May/2025 10:09:31] "GET /api/border_email/notifications HTTP/1.1" 200 -
