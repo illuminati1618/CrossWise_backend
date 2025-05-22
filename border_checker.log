@@ -71,3 +71,445 @@
 2025-05-22 10:09:26,927 - googleapiclient.discovery_cache - INFO - file_cache is only supported with oauth2client<4.0.0
 2025-05-22 10:09:27,575 - werkzeug - INFO - 127.0.0.1 - - [22/May/2025 10:09:27] "POST /api/border_email/notifications HTTP/1.1" 200 -
 2025-05-22 10:09:31,962 - werkzeug - INFO - 127.0.0.1 - - [22/May/2025 10:09:31] "GET /api/border_email/notifications HTTP/1.1" 200 -
+2025-05-22 10:46:49,622 - border_checker - INFO - 🗄️ Initializing database...
+2025-05-22 10:46:49,624 - border_checker - INFO - ✅ Database initialization completed
+2025-05-22 10:46:49,624 - border_checker - INFO - 🎬 Starting border checker thread...
+2025-05-22 10:46:49,624 - border_checker - INFO - 🚀 Border checker worker starting up...
+2025-05-22 10:46:49,624 - border_checker - INFO - ⚙️ Configuration - Check interval: 300 seconds (5.0 minutes)
+2025-05-22 10:46:49,624 - border_checker - INFO - 🗄️ Database path: instance/border_notifications.db
+2025-05-22 10:46:49,625 - border_checker - INFO - ✅ Border checker thread started successfully
+2025-05-22 10:46:49,625 - border_checker - INFO - 🔄 === Starting border wait time check cycle #1 at 2025-05-22 10:46:49 ===
+2025-05-22 10:46:49,625 - border_checker - INFO - 📡 Step 1: Fetching current border wait times...
+2025-05-22 10:46:49,625 - border_checker - INFO - 🌐 Fetching border wait times from CBP API...
+2025-05-22 10:46:49,720 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:3167
+ * Running on http://10.8.136.110:3167
+2025-05-22 10:46:49,720 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-05-22 10:46:49,721 - werkzeug - INFO -  * Restarting with stat
+2025-05-22 10:46:49,898 - border_checker - INFO - ✅ Successfully received API response with 80 ports
+2025-05-22 10:46:49,899 - border_checker - INFO - 📊 Current wait times - Standard: 70min, SENTRI: 15min, Pedestrian: 20min
+2025-05-22 10:46:49,899 - border_checker - INFO - ✅ Step 2: Port data received, checking notifications...
+2025-05-22 10:46:49,900 - border_checker - INFO - 📋 Found 3 active notifications in database
+2025-05-22 10:46:49,900 - border_checker - INFO - 🔍 Checking 3 active notifications against current wait times
+2025-05-22 10:46:49,900 - border_checker - INFO - 🎯 Condition MET: standard wait time 70 minutes is below threshold 200
+2025-05-22 10:46:49,900 - border_checker - INFO - 📧 Preparing to send email notification 1
+2025-05-22 10:46:49,907 - border_checker - ERROR - ❌ Error sending email notification: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+2025-05-22 10:46:49,907 - border_checker - ERROR - Traceback (most recent call last):
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_checker.py", line 201, in send_notification
+    creds = get_credentials()
+            ^^^^^^^^^^^^^^^^^
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 70, in get_credentials
+    raise e
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 65, in get_credentials
+    creds.refresh(Request())
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/venv/lib/python3.12/site-packages/google/oauth2/credentials.py", line 397, in refresh
+    raise exceptions.RefreshError(
+google.auth.exceptions.RefreshError: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+
+2025-05-22 10:46:49,908 - border_checker - INFO - 🎯 Condition MET: standard wait time 70 minutes is below threshold 90
+2025-05-22 10:46:49,908 - border_checker - INFO - 📧 Preparing to send email notification 2
+2025-05-22 10:46:49,908 - border_checker - ERROR - ❌ Error sending email notification: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+2025-05-22 10:46:49,909 - border_checker - ERROR - Traceback (most recent call last):
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_checker.py", line 201, in send_notification
+    creds = get_credentials()
+            ^^^^^^^^^^^^^^^^^
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 70, in get_credentials
+    raise e
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 65, in get_credentials
+    creds.refresh(Request())
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/venv/lib/python3.12/site-packages/google/oauth2/credentials.py", line 397, in refresh
+    raise exceptions.RefreshError(
+google.auth.exceptions.RefreshError: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+
+2025-05-22 10:46:49,909 - border_checker - INFO - 🎯 Condition MET: standard wait time 70 minutes is below threshold 90
+2025-05-22 10:46:49,909 - border_checker - INFO - 📧 Preparing to send email notification 3
+2025-05-22 10:46:49,910 - border_checker - ERROR - ❌ Error sending email notification: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+2025-05-22 10:46:49,910 - border_checker - ERROR - Traceback (most recent call last):
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_checker.py", line 201, in send_notification
+    creds = get_credentials()
+            ^^^^^^^^^^^^^^^^^
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 70, in get_credentials
+    raise e
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 65, in get_credentials
+    creds.refresh(Request())
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/venv/lib/python3.12/site-packages/google/oauth2/credentials.py", line 397, in refresh
+    raise exceptions.RefreshError(
+google.auth.exceptions.RefreshError: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+
+2025-05-22 10:46:49,910 - border_checker - INFO - 🔔 3 notification condition(s) met and processed
+2025-05-22 10:46:49,910 - border_checker - INFO - ✅ === Completed border wait time check cycle #1 in 0.29 seconds ===
+2025-05-22 10:46:49,910 - border_checker - INFO - ⏰ Sleeping for 300 seconds until next check...
+2025-05-22 10:46:49,910 - border_checker - INFO - ⏰ Next check scheduled for: 2025-05-22 10:51:49
+2025-05-22 10:46:55,305 - border_checker - INFO - 🗄️ Initializing database...
+2025-05-22 10:46:55,306 - border_checker - INFO - ✅ Database initialization completed
+2025-05-22 10:46:55,306 - border_checker - INFO - 🎬 Starting border checker thread...
+2025-05-22 10:46:55,307 - border_checker - INFO - 🚀 Border checker worker starting up...
+2025-05-22 10:46:55,307 - border_checker - INFO - ✅ Border checker thread started successfully
+2025-05-22 10:46:55,307 - border_checker - INFO - ⚙️ Configuration - Check interval: 300 seconds (5.0 minutes)
+2025-05-22 10:46:55,307 - border_checker - INFO - 🗄️ Database path: instance/border_notifications.db
+2025-05-22 10:46:55,308 - border_checker - INFO - 🔄 === Starting border wait time check cycle #1 at 2025-05-22 10:46:55 ===
+2025-05-22 10:46:55,308 - border_checker - INFO - 📡 Step 1: Fetching current border wait times...
+2025-05-22 10:46:55,308 - border_checker - INFO - 🌐 Fetching border wait times from CBP API...
+2025-05-22 10:46:55,371 - werkzeug - WARNING -  * Debugger is active!
+2025-05-22 10:46:55,393 - werkzeug - INFO -  * Debugger PIN: 568-464-920
+2025-05-22 10:46:55,454 - werkzeug - INFO - 127.0.0.1 - - [22/May/2025 10:46:55] "[33mOPTIONS /api/border_feedback/submit HTTP/1.1[0m" 404 -
+2025-05-22 10:46:55,460 - werkzeug - INFO - 127.0.0.1 - - [22/May/2025 10:46:55] "[33mOPTIONS /api/border_feedback/submit HTTP/1.1[0m" 404 -
+2025-05-22 10:46:55,502 - border_checker - INFO - ✅ Successfully received API response with 80 ports
+2025-05-22 10:46:55,502 - border_checker - INFO - 📊 Current wait times - Standard: 70min, SENTRI: 15min, Pedestrian: 20min
+2025-05-22 10:46:55,502 - border_checker - INFO - ✅ Step 2: Port data received, checking notifications...
+2025-05-22 10:46:55,503 - border_checker - INFO - 📋 Found 3 active notifications in database
+2025-05-22 10:46:55,503 - border_checker - INFO - 🔍 Checking 3 active notifications against current wait times
+2025-05-22 10:46:55,503 - border_checker - INFO - 🎯 Condition MET: standard wait time 70 minutes is below threshold 200
+2025-05-22 10:46:55,503 - border_checker - INFO - 📧 Preparing to send email notification 1
+2025-05-22 10:46:55,505 - border_checker - ERROR - ❌ Error sending email notification: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+2025-05-22 10:46:55,505 - border_checker - ERROR - Traceback (most recent call last):
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_checker.py", line 201, in send_notification
+    creds = get_credentials()
+            ^^^^^^^^^^^^^^^^^
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 70, in get_credentials
+    raise e
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 65, in get_credentials
+    creds.refresh(Request())
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/venv/lib/python3.12/site-packages/google/oauth2/credentials.py", line 397, in refresh
+    raise exceptions.RefreshError(
+google.auth.exceptions.RefreshError: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+
+2025-05-22 10:46:55,505 - border_checker - INFO - 🎯 Condition MET: standard wait time 70 minutes is below threshold 90
+2025-05-22 10:46:55,505 - border_checker - INFO - 📧 Preparing to send email notification 2
+2025-05-22 10:46:55,506 - border_checker - ERROR - ❌ Error sending email notification: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+2025-05-22 10:46:55,506 - border_checker - ERROR - Traceback (most recent call last):
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_checker.py", line 201, in send_notification
+    creds = get_credentials()
+            ^^^^^^^^^^^^^^^^^
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 70, in get_credentials
+    raise e
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 65, in get_credentials
+    creds.refresh(Request())
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/venv/lib/python3.12/site-packages/google/oauth2/credentials.py", line 397, in refresh
+    raise exceptions.RefreshError(
+google.auth.exceptions.RefreshError: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+
+2025-05-22 10:46:55,506 - border_checker - INFO - 🎯 Condition MET: standard wait time 70 minutes is below threshold 90
+2025-05-22 10:46:55,506 - border_checker - INFO - 📧 Preparing to send email notification 3
+2025-05-22 10:46:55,507 - border_checker - ERROR - ❌ Error sending email notification: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+2025-05-22 10:46:55,507 - border_checker - ERROR - Traceback (most recent call last):
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_checker.py", line 201, in send_notification
+    creds = get_credentials()
+            ^^^^^^^^^^^^^^^^^
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 70, in get_credentials
+    raise e
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 65, in get_credentials
+    creds.refresh(Request())
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/venv/lib/python3.12/site-packages/google/oauth2/credentials.py", line 397, in refresh
+    raise exceptions.RefreshError(
+google.auth.exceptions.RefreshError: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+
+2025-05-22 10:46:55,508 - border_checker - INFO - 🔔 3 notification condition(s) met and processed
+2025-05-22 10:46:55,508 - border_checker - INFO - ✅ === Completed border wait time check cycle #1 in 0.20 seconds ===
+2025-05-22 10:46:55,508 - border_checker - INFO - ⏰ Sleeping for 300 seconds until next check...
+2025-05-22 10:46:55,508 - border_checker - INFO - ⏰ Next check scheduled for: 2025-05-22 10:51:55
+2025-05-22 10:47:03,063 - werkzeug - INFO - 127.0.0.1 - - [22/May/2025 10:47:03] "OPTIONS /api/id HTTP/1.1" 200 -
+2025-05-22 10:47:03,104 - werkzeug - INFO - 127.0.0.1 - - [22/May/2025 10:47:03] "[31m[1mGET /api/id HTTP/1.1[0m" 401 -
+2025-05-22 10:47:03,325 - werkzeug - INFO - 127.0.0.1 - - [22/May/2025 10:47:03] "GET /api/weather-now HTTP/1.1" 200 -
+2025-05-22 10:47:03,328 - werkzeug - INFO - 127.0.0.1 - - [22/May/2025 10:47:03] "GET /api/forecast-week HTTP/1.1" 200 -
+2025-05-22 10:47:05,623 - werkzeug - INFO - 127.0.0.1 - - [22/May/2025 10:47:05] "GET /api/visualization HTTP/1.1" 200 -
+2025-05-22 10:47:05,734 - werkzeug - INFO - 127.0.0.1 - - [22/May/2025 10:47:05] "GET /api/visualization HTTP/1.1" 200 -
+2025-05-22 10:47:12,048 - werkzeug - INFO - 127.0.0.1 - - [22/May/2025 10:47:12] "GET /api/visualization HTTP/1.1" 200 -
+2025-05-22 10:47:21,641 - werkzeug - INFO - 127.0.0.1 - - [22/May/2025 10:47:21] "OPTIONS /api/id HTTP/1.1" 200 -
+2025-05-22 10:47:21,663 - werkzeug - INFO - 127.0.0.1 - - [22/May/2025 10:47:21] "[31m[1mGET /api/id HTTP/1.1[0m" 401 -
+2025-05-22 10:49:09,432 - border_checker - INFO - 🗄️ Initializing database...
+2025-05-22 10:49:09,434 - border_checker - INFO - ✅ Database initialization completed
+2025-05-22 10:49:09,434 - border_checker - INFO - 🎬 Starting border checker thread...
+2025-05-22 10:49:09,434 - border_checker - INFO - 🚀 Border checker worker starting up...
+2025-05-22 10:49:09,434 - border_checker - INFO - ✅ Border checker thread started successfully
+2025-05-22 10:49:09,434 - border_checker - INFO - ⚙️ Configuration - Check interval: 300 seconds (5.0 minutes)
+2025-05-22 10:49:09,435 - border_checker - INFO - 🗄️ Database path: instance/border_notifications.db
+2025-05-22 10:49:09,435 - border_checker - INFO - 🔄 === Starting border wait time check cycle #1 at 2025-05-22 10:49:09 ===
+2025-05-22 10:49:09,435 - border_checker - INFO - 📡 Step 1: Fetching current border wait times...
+2025-05-22 10:49:09,435 - border_checker - INFO - 🌐 Fetching border wait times from CBP API...
+2025-05-22 10:49:09,505 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:3167
+ * Running on http://10.8.136.110:3167
+2025-05-22 10:49:09,505 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-05-22 10:49:09,507 - werkzeug - INFO -  * Restarting with stat
+2025-05-22 10:49:09,812 - border_checker - INFO - ✅ Successfully received API response with 80 ports
+2025-05-22 10:49:09,812 - border_checker - INFO - 📊 Current wait times - Standard: 70min, SENTRI: 15min, Pedestrian: 20min
+2025-05-22 10:49:09,812 - border_checker - INFO - ✅ Step 2: Port data received, checking notifications...
+2025-05-22 10:49:09,813 - border_checker - INFO - 📋 Found 3 active notifications in database
+2025-05-22 10:49:09,813 - border_checker - INFO - 🔍 Checking 3 active notifications against current wait times
+2025-05-22 10:49:09,813 - border_checker - INFO - 🎯 Condition MET: standard wait time 70 minutes is below threshold 200
+2025-05-22 10:49:09,813 - border_checker - INFO - 📧 Preparing to send email notification 1
+2025-05-22 10:49:09,817 - border_checker - ERROR - ❌ Error sending email notification: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+2025-05-22 10:49:09,818 - border_checker - ERROR - Traceback (most recent call last):
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_checker.py", line 201, in send_notification
+    creds = get_credentials()
+            ^^^^^^^^^^^^^^^^^
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 70, in get_credentials
+    raise e
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 65, in get_credentials
+    creds.refresh(Request())
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/venv/lib/python3.12/site-packages/google/oauth2/credentials.py", line 397, in refresh
+    raise exceptions.RefreshError(
+google.auth.exceptions.RefreshError: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+
+2025-05-22 10:49:09,818 - border_checker - INFO - 🎯 Condition MET: standard wait time 70 minutes is below threshold 90
+2025-05-22 10:49:09,818 - border_checker - INFO - 📧 Preparing to send email notification 2
+2025-05-22 10:49:09,819 - border_checker - ERROR - ❌ Error sending email notification: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+2025-05-22 10:49:09,820 - border_checker - ERROR - Traceback (most recent call last):
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_checker.py", line 201, in send_notification
+    creds = get_credentials()
+            ^^^^^^^^^^^^^^^^^
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 70, in get_credentials
+    raise e
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 65, in get_credentials
+    creds.refresh(Request())
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/venv/lib/python3.12/site-packages/google/oauth2/credentials.py", line 397, in refresh
+    raise exceptions.RefreshError(
+google.auth.exceptions.RefreshError: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+
+2025-05-22 10:49:09,820 - border_checker - INFO - 🎯 Condition MET: standard wait time 70 minutes is below threshold 90
+2025-05-22 10:49:09,820 - border_checker - INFO - 📧 Preparing to send email notification 3
+2025-05-22 10:49:09,821 - border_checker - ERROR - ❌ Error sending email notification: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+2025-05-22 10:49:09,821 - border_checker - ERROR - Traceback (most recent call last):
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_checker.py", line 201, in send_notification
+    creds = get_credentials()
+            ^^^^^^^^^^^^^^^^^
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 70, in get_credentials
+    raise e
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 65, in get_credentials
+    creds.refresh(Request())
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/venv/lib/python3.12/site-packages/google/oauth2/credentials.py", line 397, in refresh
+    raise exceptions.RefreshError(
+google.auth.exceptions.RefreshError: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+
+2025-05-22 10:49:09,822 - border_checker - INFO - 🔔 3 notification condition(s) met and processed
+2025-05-22 10:49:09,822 - border_checker - INFO - ✅ === Completed border wait time check cycle #1 in 0.39 seconds ===
+2025-05-22 10:49:09,822 - border_checker - INFO - ⏰ Sleeping for 300 seconds until next check...
+2025-05-22 10:49:09,822 - border_checker - INFO - ⏰ Next check scheduled for: 2025-05-22 10:54:09
+2025-05-22 10:49:15,054 - border_checker - INFO - 🗄️ Initializing database...
+2025-05-22 10:49:15,056 - border_checker - INFO - ✅ Database initialization completed
+2025-05-22 10:49:15,056 - border_checker - INFO - 🎬 Starting border checker thread...
+2025-05-22 10:49:15,057 - border_checker - INFO - 🚀 Border checker worker starting up...
+2025-05-22 10:49:15,057 - border_checker - INFO - ✅ Border checker thread started successfully
+2025-05-22 10:49:15,057 - border_checker - INFO - ⚙️ Configuration - Check interval: 300 seconds (5.0 minutes)
+2025-05-22 10:49:15,058 - border_checker - INFO - 🗄️ Database path: instance/border_notifications.db
+2025-05-22 10:49:15,058 - border_checker - INFO - 🔄 === Starting border wait time check cycle #1 at 2025-05-22 10:49:15 ===
+2025-05-22 10:49:15,059 - border_checker - INFO - 📡 Step 1: Fetching current border wait times...
+2025-05-22 10:49:15,060 - border_checker - INFO - 🌐 Fetching border wait times from CBP API...
+2025-05-22 10:49:15,128 - werkzeug - WARNING -  * Debugger is active!
+2025-05-22 10:49:15,169 - werkzeug - INFO -  * Debugger PIN: 568-464-920
+2025-05-22 10:49:15,295 - border_checker - INFO - ✅ Successfully received API response with 80 ports
+2025-05-22 10:49:15,295 - border_checker - INFO - 📊 Current wait times - Standard: 70min, SENTRI: 15min, Pedestrian: 20min
+2025-05-22 10:49:15,296 - border_checker - INFO - ✅ Step 2: Port data received, checking notifications...
+2025-05-22 10:49:15,297 - border_checker - INFO - 📋 Found 3 active notifications in database
+2025-05-22 10:49:15,297 - border_checker - INFO - 🔍 Checking 3 active notifications against current wait times
+2025-05-22 10:49:15,298 - border_checker - INFO - 🎯 Condition MET: standard wait time 70 minutes is below threshold 200
+2025-05-22 10:49:15,298 - border_checker - INFO - 📧 Preparing to send email notification 1
+2025-05-22 10:49:15,309 - border_checker - ERROR - ❌ Error sending email notification: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+2025-05-22 10:49:15,311 - border_checker - ERROR - Traceback (most recent call last):
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_checker.py", line 201, in send_notification
+    creds = get_credentials()
+            ^^^^^^^^^^^^^^^^^
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 70, in get_credentials
+    raise e
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 65, in get_credentials
+    creds.refresh(Request())
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/venv/lib/python3.12/site-packages/google/oauth2/credentials.py", line 397, in refresh
+    raise exceptions.RefreshError(
+google.auth.exceptions.RefreshError: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+
+2025-05-22 10:49:15,311 - border_checker - INFO - 🎯 Condition MET: standard wait time 70 minutes is below threshold 90
+2025-05-22 10:49:15,311 - border_checker - INFO - 📧 Preparing to send email notification 2
+2025-05-22 10:49:15,312 - border_checker - ERROR - ❌ Error sending email notification: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+2025-05-22 10:49:15,313 - border_checker - ERROR - Traceback (most recent call last):
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_checker.py", line 201, in send_notification
+    creds = get_credentials()
+            ^^^^^^^^^^^^^^^^^
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 70, in get_credentials
+    raise e
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 65, in get_credentials
+    creds.refresh(Request())
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/venv/lib/python3.12/site-packages/google/oauth2/credentials.py", line 397, in refresh
+    raise exceptions.RefreshError(
+google.auth.exceptions.RefreshError: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+
+2025-05-22 10:49:15,313 - border_checker - INFO - 🎯 Condition MET: standard wait time 70 minutes is below threshold 90
+2025-05-22 10:49:15,314 - border_checker - INFO - 📧 Preparing to send email notification 3
+2025-05-22 10:49:15,316 - border_checker - ERROR - ❌ Error sending email notification: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+2025-05-22 10:49:15,317 - border_checker - ERROR - Traceback (most recent call last):
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_checker.py", line 201, in send_notification
+    creds = get_credentials()
+            ^^^^^^^^^^^^^^^^^
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 70, in get_credentials
+    raise e
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 65, in get_credentials
+    creds.refresh(Request())
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/venv/lib/python3.12/site-packages/google/oauth2/credentials.py", line 397, in refresh
+    raise exceptions.RefreshError(
+google.auth.exceptions.RefreshError: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+
+2025-05-22 10:49:15,317 - border_checker - INFO - 🔔 3 notification condition(s) met and processed
+2025-05-22 10:49:15,317 - border_checker - INFO - ✅ === Completed border wait time check cycle #1 in 0.26 seconds ===
+2025-05-22 10:49:15,318 - border_checker - INFO - ⏰ Sleeping for 300 seconds until next check...
+2025-05-22 10:49:15,318 - border_checker - INFO - ⏰ Next check scheduled for: 2025-05-22 10:54:15
+2025-05-22 10:51:33,591 - werkzeug - INFO - 127.0.0.1 - - [22/May/2025 10:51:33] "[33mOPTIONS /api/border_feedback/submit HTTP/1.1[0m" 404 -
+2025-05-22 10:52:43,575 - werkzeug - INFO -  * Detected change in '/Users/yuvabala/nighthawk/CrossWise_backend/main.py', reloading
+2025-05-22 10:52:52,435 - werkzeug - INFO -  * Restarting with stat
+2025-05-22 10:53:09,644 - border_checker - INFO - 🗄️ Initializing database...
+2025-05-22 10:53:09,711 - border_checker - INFO - ✅ Database initialization completed
+2025-05-22 10:53:09,714 - border_checker - INFO - 🎬 Starting border checker thread...
+2025-05-22 10:53:09,714 - border_checker - INFO - 🚀 Border checker worker starting up...
+2025-05-22 10:53:09,715 - border_checker - INFO - ⚙️ Configuration - Check interval: 300 seconds (5.0 minutes)
+2025-05-22 10:53:09,715 - border_checker - INFO - 🗄️ Database path: instance/border_notifications.db
+2025-05-22 10:53:09,715 - border_checker - INFO - 🔄 === Starting border wait time check cycle #1 at 2025-05-22 10:53:09 ===
+2025-05-22 10:53:09,715 - border_checker - INFO - 📡 Step 1: Fetching current border wait times...
+2025-05-22 10:53:09,715 - border_checker - INFO - ✅ Border checker thread started successfully
+2025-05-22 10:53:09,715 - border_checker - INFO - 🌐 Fetching border wait times from CBP API...
+2025-05-22 10:53:10,025 - werkzeug - WARNING -  * Debugger is active!
+2025-05-22 10:53:10,166 - werkzeug - INFO -  * Debugger PIN: 568-464-920
+2025-05-22 10:53:10,268 - border_checker - INFO - ✅ Successfully received API response with 80 ports
+2025-05-22 10:53:10,268 - border_checker - INFO - 📊 Current wait times - Standard: 70min, SENTRI: 15min, Pedestrian: 20min
+2025-05-22 10:53:10,270 - border_checker - INFO - ✅ Step 2: Port data received, checking notifications...
+2025-05-22 10:53:10,274 - border_checker - INFO - 📋 Found 3 active notifications in database
+2025-05-22 10:53:10,274 - border_checker - INFO - 🔍 Checking 3 active notifications against current wait times
+2025-05-22 10:53:10,279 - border_checker - INFO - 🎯 Condition MET: standard wait time 70 minutes is below threshold 200
+2025-05-22 10:53:10,279 - border_checker - INFO - 📧 Preparing to send email notification 1
+2025-05-22 10:53:10,333 - border_checker - ERROR - ❌ Error sending email notification: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+2025-05-22 10:53:10,334 - border_checker - ERROR - Traceback (most recent call last):
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_checker.py", line 201, in send_notification
+    creds = get_credentials()
+            ^^^^^^^^^^^^^^^^^
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 70, in get_credentials
+    raise e
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 65, in get_credentials
+    creds.refresh(Request())
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/venv/lib/python3.12/site-packages/google/oauth2/credentials.py", line 397, in refresh
+    raise exceptions.RefreshError(
+google.auth.exceptions.RefreshError: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+
+2025-05-22 10:53:10,336 - border_checker - INFO - 🎯 Condition MET: standard wait time 70 minutes is below threshold 90
+2025-05-22 10:53:10,337 - border_checker - INFO - 📧 Preparing to send email notification 2
+2025-05-22 10:53:10,341 - border_checker - ERROR - ❌ Error sending email notification: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+2025-05-22 10:53:10,341 - border_checker - ERROR - Traceback (most recent call last):
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_checker.py", line 201, in send_notification
+    creds = get_credentials()
+            ^^^^^^^^^^^^^^^^^
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 70, in get_credentials
+    raise e
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 65, in get_credentials
+    creds.refresh(Request())
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/venv/lib/python3.12/site-packages/google/oauth2/credentials.py", line 397, in refresh
+    raise exceptions.RefreshError(
+google.auth.exceptions.RefreshError: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+
+2025-05-22 10:53:10,344 - border_checker - INFO - 🎯 Condition MET: standard wait time 70 minutes is below threshold 90
+2025-05-22 10:53:10,344 - border_checker - INFO - 📧 Preparing to send email notification 3
+2025-05-22 10:53:10,347 - border_checker - ERROR - ❌ Error sending email notification: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+2025-05-22 10:53:10,361 - border_checker - ERROR - Traceback (most recent call last):
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_checker.py", line 201, in send_notification
+    creds = get_credentials()
+            ^^^^^^^^^^^^^^^^^
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 70, in get_credentials
+    raise e
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 65, in get_credentials
+    creds.refresh(Request())
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/venv/lib/python3.12/site-packages/google/oauth2/credentials.py", line 397, in refresh
+    raise exceptions.RefreshError(
+google.auth.exceptions.RefreshError: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+
+2025-05-22 10:53:10,361 - border_checker - INFO - 🔔 3 notification condition(s) met and processed
+2025-05-22 10:53:10,362 - border_checker - INFO - ✅ === Completed border wait time check cycle #1 in 0.65 seconds ===
+2025-05-22 10:53:10,375 - border_checker - INFO - ⏰ Sleeping for 300 seconds until next check...
+2025-05-22 10:53:10,376 - border_checker - INFO - ⏰ Next check scheduled for: 2025-05-22 10:58:10
+2025-05-22 10:54:09,932 - border_checker - INFO - 🔄 === Starting border wait time check cycle #2 at 2025-05-22 10:54:09 ===
+2025-05-22 10:54:09,973 - border_checker - INFO - 📡 Step 1: Fetching current border wait times...
+2025-05-22 10:54:09,985 - border_checker - INFO - 🌐 Fetching border wait times from CBP API...
+2025-05-22 10:54:11,111 - border_checker - INFO - ✅ Successfully received API response with 80 ports
+2025-05-22 10:54:11,111 - border_checker - INFO - 📊 Current wait times - Standard: 70min, SENTRI: 15min, Pedestrian: 20min
+2025-05-22 10:54:11,121 - border_checker - INFO - ✅ Step 2: Port data received, checking notifications...
+2025-05-22 10:54:11,219 - border_checker - INFO - 📋 Found 3 active notifications in database
+2025-05-22 10:54:11,225 - border_checker - INFO - 🔍 Checking 3 active notifications against current wait times
+2025-05-22 10:54:11,226 - border_checker - INFO - 🎯 Condition MET: standard wait time 70 minutes is below threshold 200
+2025-05-22 10:54:11,242 - border_checker - INFO - ⏭️ Skipping notification 1 - already sent recently
+2025-05-22 10:54:11,242 - border_checker - INFO - 🎯 Condition MET: standard wait time 70 minutes is below threshold 90
+2025-05-22 10:54:11,242 - border_checker - INFO - ⏭️ Skipping notification 2 - already sent recently
+2025-05-22 10:54:11,243 - border_checker - INFO - 🎯 Condition MET: standard wait time 70 minutes is below threshold 90
+2025-05-22 10:54:11,243 - border_checker - INFO - ⏭️ Skipping notification 3 - already sent recently
+2025-05-22 10:54:11,245 - border_checker - INFO - 🔔 3 notification condition(s) met and processed
+2025-05-22 10:54:11,246 - border_checker - INFO - ✅ === Completed border wait time check cycle #2 in 1.37 seconds ===
+2025-05-22 10:54:11,246 - border_checker - INFO - ⏰ Sleeping for 300 seconds until next check...
+2025-05-22 10:54:11,256 - border_checker - INFO - ⏰ Next check scheduled for: 2025-05-22 10:59:11
+2025-05-22 10:55:46,653 - werkzeug - INFO -  * Detected change in '/Users/yuvabala/nighthawk/CrossWise_backend/main.py', reloading
+2025-05-22 10:55:50,736 - werkzeug - INFO -  * Restarting with stat
+2025-05-22 10:56:00,234 - border_checker - INFO - 🗄️ Initializing database...
+2025-05-22 10:56:00,236 - border_checker - INFO - ✅ Database initialization completed
+2025-05-22 10:56:00,237 - border_checker - INFO - 🎬 Starting border checker thread...
+2025-05-22 10:56:00,237 - border_checker - INFO - 🚀 Border checker worker starting up...
+2025-05-22 10:56:00,237 - border_checker - INFO - ✅ Border checker thread started successfully
+2025-05-22 10:56:00,237 - border_checker - INFO - ⚙️ Configuration - Check interval: 300 seconds (5.0 minutes)
+2025-05-22 10:56:00,238 - border_checker - INFO - 🗄️ Database path: instance/border_notifications.db
+2025-05-22 10:56:00,238 - border_checker - INFO - 🔄 === Starting border wait time check cycle #1 at 2025-05-22 10:56:00 ===
+2025-05-22 10:56:00,239 - border_checker - INFO - 📡 Step 1: Fetching current border wait times...
+2025-05-22 10:56:00,239 - border_checker - INFO - 🌐 Fetching border wait times from CBP API...
+2025-05-22 10:56:00,344 - werkzeug - WARNING -  * Debugger is active!
+2025-05-22 10:56:00,398 - werkzeug - INFO -  * Debugger PIN: 568-464-920
+2025-05-22 10:56:00,596 - border_checker - INFO - ✅ Successfully received API response with 80 ports
+2025-05-22 10:56:00,597 - border_checker - INFO - 📊 Current wait times - Standard: 70min, SENTRI: 15min, Pedestrian: 20min
+2025-05-22 10:56:00,598 - border_checker - INFO - ✅ Step 2: Port data received, checking notifications...
+2025-05-22 10:56:00,616 - werkzeug - INFO - 127.0.0.1 - - [22/May/2025 10:56:00] "OPTIONS /api/id HTTP/1.1" 200 -
+2025-05-22 10:56:00,616 - border_checker - INFO - 📋 Found 3 active notifications in database
+2025-05-22 10:56:00,617 - border_checker - INFO - 🔍 Checking 3 active notifications against current wait times
+2025-05-22 10:56:00,617 - border_checker - INFO - 🎯 Condition MET: standard wait time 70 minutes is below threshold 200
+2025-05-22 10:56:00,617 - border_checker - INFO - 📧 Preparing to send email notification 1
+2025-05-22 10:56:00,622 - border_checker - ERROR - ❌ Error sending email notification: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+2025-05-22 10:56:00,625 - werkzeug - INFO - 127.0.0.1 - - [22/May/2025 10:56:00] "[31m[1mGET /api/id HTTP/1.1[0m" 401 -
+2025-05-22 10:56:00,626 - border_checker - ERROR - Traceback (most recent call last):
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_checker.py", line 201, in send_notification
+    creds = get_credentials()
+            ^^^^^^^^^^^^^^^^^
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 70, in get_credentials
+    raise e
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 65, in get_credentials
+    creds.refresh(Request())
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/venv/lib/python3.12/site-packages/google/oauth2/credentials.py", line 397, in refresh
+    raise exceptions.RefreshError(
+google.auth.exceptions.RefreshError: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+
+2025-05-22 10:56:00,627 - border_checker - INFO - 🎯 Condition MET: standard wait time 70 minutes is below threshold 90
+2025-05-22 10:56:00,627 - border_checker - INFO - 📧 Preparing to send email notification 2
+2025-05-22 10:56:00,630 - border_checker - ERROR - ❌ Error sending email notification: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+2025-05-22 10:56:00,635 - border_checker - ERROR - Traceback (most recent call last):
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_checker.py", line 201, in send_notification
+    creds = get_credentials()
+            ^^^^^^^^^^^^^^^^^
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 70, in get_credentials
+    raise e
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 65, in get_credentials
+    creds.refresh(Request())
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/venv/lib/python3.12/site-packages/google/oauth2/credentials.py", line 397, in refresh
+    raise exceptions.RefreshError(
+google.auth.exceptions.RefreshError: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+
+2025-05-22 10:56:00,636 - border_checker - INFO - 🎯 Condition MET: standard wait time 70 minutes is below threshold 90
+2025-05-22 10:56:00,636 - border_checker - INFO - 📧 Preparing to send email notification 3
+2025-05-22 10:56:00,637 - border_checker - ERROR - ❌ Error sending email notification: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+2025-05-22 10:56:00,638 - border_checker - ERROR - Traceback (most recent call last):
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_checker.py", line 201, in send_notification
+    creds = get_credentials()
+            ^^^^^^^^^^^^^^^^^
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 70, in get_credentials
+    raise e
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/api/border_email.py", line 65, in get_credentials
+    creds.refresh(Request())
+  File "/Users/yuvabala/nighthawk/CrossWise_backend/venv/lib/python3.12/site-packages/google/oauth2/credentials.py", line 397, in refresh
+    raise exceptions.RefreshError(
+google.auth.exceptions.RefreshError: The credentials do not contain the necessary fields need to refresh the access token. You must specify refresh_token, token_uri, client_id, and client_secret.
+
+2025-05-22 10:56:00,638 - border_checker - INFO - 🔔 3 notification condition(s) met and processed
+2025-05-22 10:56:00,639 - border_checker - INFO - ✅ === Completed border wait time check cycle #1 in 0.40 seconds ===
+2025-05-22 10:56:00,639 - border_checker - INFO - ⏰ Sleeping for 300 seconds until next check...
+2025-05-22 10:56:00,639 - border_checker - INFO - ⏰ Next check scheduled for: 2025-05-22 11:01:00
+2025-05-22 10:56:02,154 - werkzeug - INFO - 127.0.0.1 - - [22/May/2025 10:56:02] "OPTIONS /api/border_feedback/submit HTTP/1.1" 200 -
+2025-05-22 10:56:02,181 - werkzeug - INFO - 127.0.0.1 - - [22/May/2025 10:56:02] "POST /api/border_feedback/submit HTTP/1.1" 200 -
