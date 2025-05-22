@@ -67,6 +67,7 @@ from model.cancer import CancerModel
 from model.estonia import EstoniaModel
 from model.help_request import HelpRequest
 from model.titanic import TitanicModel
+from model.traffic_report import TrafficReport, initTrafficReports
 
 # server only Views
 
@@ -351,6 +352,7 @@ def generate_data():
     initLanguages()
     initPolls()
     initHelpRequests()
+    initTrafficReports()
     
 # Backup the old database
 def backup_database(db_uri, backup_uri):
