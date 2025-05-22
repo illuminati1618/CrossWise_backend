@@ -28,7 +28,7 @@ def init_db():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     
-    # Create notifications table
+    # Create notifications table with sms_email field
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS border_notifications (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -36,6 +36,7 @@ def init_db():
         condition TEXT NOT NULL,
         wait_time INTEGER NOT NULL,
         email TEXT NOT NULL,
+        sms_email TEXT,
         active BOOLEAN DEFAULT 1,
         created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
@@ -166,16 +167,20 @@ def create_notification():
         conn = get_db_connection()
         cursor = conn.cursor()
         
+        # Check for sms_email in request
+        sms_email = data.get('smsEmail', None)
+        
         # Insert the notification
         cursor.execute('''
             INSERT INTO border_notifications 
-            (type, condition, wait_time, email, created)
-            VALUES (?, ?, ?, ?, ?)
+            (type, condition, wait_time, email, sms_email, created)
+            VALUES (?, ?, ?, ?, ?, ?)
         ''', (
             data['type'],
             data['condition'],
             data['waitTime'],
             data['email'],
+            sms_email,
             datetime.now().isoformat()
         ))
         
@@ -260,14 +265,20 @@ def get_notifications():
         # Convert to list of dictionaries
         result = []
         for notification in notifications:
-            result.append({
+            notification_data = {
                 'id': notification['id'],
                 'type': notification['type'],
                 'condition': notification['condition'],
                 'waitTime': notification['wait_time'],
                 'email': notification['email'],
                 'created': notification['created']
-            })
+            }
+            
+            # Include SMS email if present
+            if notification['sms_email']:
+                notification_data['smsEmail'] = notification['sms_email']
+                
+            result.append(notification_data)
         
         conn.close()
         

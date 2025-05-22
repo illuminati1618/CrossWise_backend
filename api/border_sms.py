@@ -20,6 +20,9 @@ EMAIL_CLIENT_ID = os.getenv('EMAIL_CLIENT_ID')
 EMAIL_CLIENT_SECRET = os.getenv('EMAIL_CLIENT_SECRET')
 GOOGLE_REFRESH_TOKEN = os.getenv('GOOGLE_REFRESH_TOKEN')
 
+# SMS message template
+template = "Border Alert: {label} wait time {direction} {threshold} minutes."
+
 # Function to get Gmail credentials
 def get_credentials():
     creds = Credentials(
@@ -44,9 +47,6 @@ def create_message(sender, to, subject, message_text):
 
 def send_message(service, user_id, message):
     return service.users().messages().send(userId=user_id, body=message).execute()
-
-# Endpoint to create SMS notification via email-to-SMS
-template = "Border Alert: {label} wait time {direction} {threshold} minutes."
 
 @sms_api.route('/test_sms', methods=['POST'])
 def test_sms():
@@ -94,6 +94,36 @@ def create_sms_notification():
                     'error': f'Missing field: {field}'
                 }), 400
 
+        # First store notification in database for background checker
+        try:
+            conn = sqlite3.connect('instance/border_notifications.db')
+            cursor = conn.cursor()
+            
+            cursor.execute('''
+                INSERT INTO border_notifications 
+                (type, condition, wait_time, email, sms_email, created)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (
+                data['type'],
+                data['condition'],
+                data['waitTime'],
+                '',  # Email is empty for SMS-only notifications
+                data['smsEmail'],
+                datetime.now().isoformat()
+            ))
+            
+            notification_id = cursor.lastrowid
+            conn.commit()
+            conn.close()
+        except Exception as e:
+            print(f"Error storing SMS notification in database: {str(e)}")
+            print(traceback.format_exc())
+            return jsonify({
+                'success': False,
+                'error': str(e)
+            }), 500
+
+        # Get wait time type label
         type_labels = {
             'standard': 'Standard Vehicles',
             'sentri': 'SENTRI Lanes',
@@ -114,8 +144,9 @@ def create_sms_notification():
 
         return jsonify({
             'success': True,
-            'message': f'SMS notification sent successfully to {data["smsEmail"]}',
-            'messageId': result['id']
+            'message': f'SMS notification created successfully for {data["smsEmail"]}',
+            'messageId': result['id'],
+            'notification_id': notification_id
         })
     except Exception as e:
         print(f"Error creating SMS notification: {str(e)}")

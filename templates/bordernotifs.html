@@ -399,16 +399,23 @@
         // Load existing notifications
         async function loadNotifications() {
             try {
-                const response = await fetch('/api/border_email/all');
+                const response = await fetch('/api/border_email/notifications');
                 const data = await response.json();
                 
-                if (data.success && data.notifications.length > 0) {
+                if (data.success) {
                     const notificationsContainer = document.getElementById('active-notifications');
                     notificationsContainer.innerHTML = '';
+                    
+                    if (data.notifications.length === 0) {
+                        notificationsContainer.innerHTML = '<p class="text-gray-400">You don\'t have any active notifications yet.</p>';
+                        return;
+                    }
                     
                     data.notifications.forEach(notification => {
                         addNotificationToUI(notification);
                     });
+                } else {
+                    console.error('Error loading notifications:', data.error);
                 }
             } catch (error) {
                 console.error('Error loading notifications:', error);
@@ -424,7 +431,6 @@
             
             // Create notification and send to backend
             const notification = {
-                method: 'email',
                 type: formData.get('notification-type'),
                 condition: formData.get('condition-type'),
                 waitTime: formData.get('wait-time'),
@@ -434,7 +440,7 @@
             
             try {
                 // Send to backend
-                const response = await fetch('/api/border_email/create', {
+                const response = await fetch('/api/border_email/notifications', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -448,14 +454,14 @@
                     // Add ID from response
                     notification.id = result.id;
                     
-                    // Add to active notifications
-                    addNotificationToUI(notification);
-                    
                     // Show success message
                     alert('Email notification created successfully! A confirmation email has been sent.');
                     
                     // Reset form
                     this.reset();
+                    
+                    // Refresh notification list
+                    loadNotifications();
                 } else {
                     alert(`Error: ${result.error}`);
                 }
@@ -465,6 +471,62 @@
             }
         });
 
+        // SMS Form submission
+        document.getElementById('sms-notification-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const formData = new FormData(this);
+            const phone = formData.get('phone').trim();
+            const carrier = formData.get('carrier');
+            
+            // Validate phone and carrier
+            if (!phone || phone.length < 10 || !carrier) {
+                alert('Please enter a valid phone number and carrier.');
+                return;
+            }
+            
+            // Create SMS email address (phone + carrier domain)
+            const smsEmail = `${phone}${carrier}`;
+            
+            // Create notification and send to backend
+            const notification = {
+                type: formData.get('notification-type'),
+                condition: formData.get('condition-type'),
+                waitTime: formData.get('wait-time'),
+                smsEmail: smsEmail
+            };
+            
+            try {
+                // Send to backend
+                const response = await fetch('/api/border_notifications/create_sms', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(notification)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Show success message
+                    alert('SMS notification created successfully!');
+                    
+                    // Reset form
+                    this.reset();
+                    
+                    // Refresh notification list
+                    loadNotifications();
+                } else {
+                    alert(`Error: ${result.error}`);
+                }
+            } catch (error) {
+                console.error('Error creating notification:', error);
+                alert('Failed to create notification. Please try again.');
+            }
+        });
+        
         // Add notification to the UI
         function addNotificationToUI(notification) {
             const notificationsContainer = document.getElementById('active-notifications');
@@ -486,22 +548,36 @@
                 'pedestrian': 'Pedestrian'
             };
             
-            // Determine notification method badge
-            const methodBadge = notification.method === 'email' 
-                ? `<span class="badge badge-primary">Email</span>`
-                : `<span class="badge badge-success">SMS</span>`;
-                
-            // Determine contact info to display
-            const contactInfo = notification.method === 'email'
-                ? `Email: ${notification.email}`
-                : `Phone: ${notification.phone}`;
+            // Determine notification method
+            const hasEmail = notification.email && notification.email.length > 0;
+            const hasSms = notification.smsEmail && notification.smsEmail.length > 0;
+            
+            let methodBadge = '';
+            let contactInfo = '';
+            
+            if (hasEmail && hasSms) {
+                methodBadge = `
+                    <span class="badge badge-primary">Email</span>
+                    <span class="badge badge-success">SMS</span>
+                `;
+                contactInfo = `
+                    <p>Email: ${notification.email}</p>
+                    <p>SMS: ${notification.smsEmail}</p>
+                `;
+            } else if (hasEmail) {
+                methodBadge = `<span class="badge badge-primary">Email</span>`;
+                contactInfo = `<p>Email: ${notification.email}</p>`;
+            } else if (hasSms) {
+                methodBadge = `<span class="badge badge-success">SMS</span>`;
+                contactInfo = `<p>SMS: ${notification.smsEmail}</p>`;
+            }
             
             notificationEl.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <h3>${typeNames[notification.type]} ${methodBadge}</h3>
                         <p>Notify me ${notification.condition === 'below' ? 'when wait time falls below' : 'when wait time rises above'} ${notification.waitTime} minutes</p>
-                        <p>${contactInfo}</p>
+                        ${contactInfo}
                         <small class="text-gray-400">Created: ${new Date(notification.created).toLocaleString()}</small>
                     </div>
                     <button class="btn" style="background-color: #f44336;" onclick="removeNotification('${notification.id}')">Remove</button>
@@ -515,7 +591,7 @@
         window.removeNotification = async function(notificationId) {
             if (confirm('Are you sure you want to remove this notification?')) {
                 try {
-                    const response = await fetch(`/api/border_email/${notificationId}`, {
+                    const response = await fetch(`/api/border_email/notifications/${notificationId}`, {
                         method: 'DELETE'
                     });
                     
@@ -583,49 +659,7 @@
             }
         });
         
-        document.getElementById('sms-notification-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            const phone = formData.get('phone').trim();
-            const carrier = formData.get('carrier');
-            const type = formData.get('notification-type');
-            const condition = formData.get('condition-type');
-            const waitTime = formData.get('wait-time');
-
-            if (!phone || phone.length < 10 || !carrier) {
-                alert('Please enter a valid phone number and carrier.');
-                return;
-            }
-
-            const smsEmail = `${phone}${carrier}`;
-
-            const notification = {
-                type: type,
-                condition: condition,
-                waitTime: waitTime,
-                smsEmail: smsEmail
-            };
-
-            try {
-                const response = await fetch('/api/border_notifications/create_sms', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(notification)
-                });
-
-                const result = await response.json();
-                if (result.success) {
-                    alert('SMS notification created and confirmation sent!');
-                    this.reset();
-                } else {
-                    alert(`Error: ${result.error}`);
-                }
-            } catch (error) {
-                console.error('Error creating SMS notification:', error);
-                alert('Failed to create SMS notification.');
-            }
-        });
-
+        // Test SMS Button
         document.getElementById('test-sms-btn').addEventListener('click', async function() {
             const phone = document.getElementById('phone').value.trim();
             const carrier = document.getElementById('carrier').value;
@@ -646,7 +680,7 @@
 
                 const result = await response.json();
                 if (result.success) {
-                    alert(`Test SMS sent successfully to ${smsEmail}`);
+                    alert(`Test SMS sent successfully to ${phone} via ${carrier}`);
                 } else {
                     alert(`Error: ${result.error}`);
                 }
