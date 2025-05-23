@@ -17,6 +17,9 @@ venv_backend/*
 venv_backend/
 backup/
 
+
+border_checker.log
+
 # instance data, databases
 instance/volumes/
 instance/volumes/*
