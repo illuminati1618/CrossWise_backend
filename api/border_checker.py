@@ -10,11 +10,14 @@ import json
 from googleapiclient.discovery import build
 
 # Enhanced logging configuration
+
+bordercheckerpath = 'data/border_checker.log'
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler("border_checker.log"),
+        logging.FileHandler(bordercheckerpath),
         logging.StreamHandler()
     ]
 )
