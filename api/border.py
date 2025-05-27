@@ -3,6 +3,8 @@ from flask_restful import Api, Resource
 from model.border import BorderWaitTimeModel
 from datetime import datetime
 import math
+import requests
+import json as JSON
 
 border_api = Blueprint('border_api', __name__, url_prefix='/api/border')
 api = Api(border_api)
@@ -51,6 +53,11 @@ class BorderAPI:
             
             values = {}
 
+            if "mode" not in data:
+                values["mode"] = "long_term"
+            else:
+                values["mode"] = data["mode"]
+
             if "day" not in data:
                 day_map = {6: 6, 0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5}
                 current_day = datetime.now().weekday()
@@ -66,14 +73,56 @@ class BorderAPI:
             else:
                 values["time"] = data["time"]
 
+            if values["mode"] == "long_term":
+                borderModel = BorderWaitTimeModel.get_instance()
+                response = borderModel.predict({"bwt_day": values["day"], "time_slot": values["time"]})
 
-            print(f"Day: {values['day']}, Time: {values['time']}")
+                return jsonify({
+                    "time": math.trunc((response["linear_model_prediction"] + response["tree_model_prediction"]) / 2),
+                })
+            else:
+                response = requests.get("https://bwt.cbp.gov/api/bwtwaittimegraph/09250401/2025-05-27")
+                if response.status_code == 200:
+                    response = response.json()
 
-            borderModel = BorderWaitTimeModel.get_instance()
-            response = borderModel.predict({"bwt_day": values["day"], "time_slot": values["time"]})
+                    t_str = str(values["time"])
+                    t = int(t_str)
 
-            return jsonify({
-                "time": math.trunc((response["linear_model_prediction"] + response["tree_model_prediction"]) / 2),
-            })
+                    slots = response[0]["private_time_slots"]["private_slot"]
+                    differences = []
+                    weights = []
+                    slots = response[0]["private_time_slots"]["private_slot"]
+                    differences = []
+                    weights = []
+
+                    for hour_int, slot in enumerate(slots):
+                        if abs(hour_int - t) > 3:
+                            continue
+                        today_str = slot["standard_lane_today_wait"]
+                        avg_str = slot["standard_lane_average_wait"]
+                        if not today_str.isdigit() or not avg_str.isdigit():
+                            continue
+                        today_wait = int(today_str)
+                        avg_wait = int(avg_str)
+                        diff = today_wait - avg_wait
+                        dist = abs(hour_int - t)
+                        weight = 1 / pow(dist + 1, 2)
+                        differences.append(diff * weight)
+                        weights.append(weight)
+                    if weights:
+                        weighted_diff = sum(differences) / sum(weights)
+                    else:
+                        weighted_diff = 0
+                    base_avg_str = slots[t]["standard_lane_average_wait"]
+                    base_avg = int(base_avg_str) if base_avg_str.isdigit() else 0
+                    predicted_today = base_avg + weighted_diff
+
+
+
+                    return jsonify({
+                        "time": str(math.trunc(predicted_today)),
+                    })
+                else:
+                    return jsonify({"error": "Failed to fetch data from external API"}), 500
 
     api.add_resource(_Predict, '/predict')

@@ -378,9 +378,7 @@ def extract_data():
         data['school_classes'] = [school_class.read() for school_class in SchoolClass.query.all()]
         data['chat'] = [chat.read() for chat in Chat.query.all()]
         data['votes'] = [vote.read() for vote in Vote.query.all()]
-        data['team_members'] = [team_member.read() for team_member in TeamMember.query.all()]
         data['languages'] = [language.read() for language in Language.query.all()]
-        data['top_interests'] = [top_interest.read() for top_interest in TopInterest.query.all()]
         data['polls'] = [poll.read() for poll in Poll.query.all()]
     return data
 
@@ -410,10 +408,8 @@ def restore_data(data):
         _ = SchoolClass.restore(data['school_classes'])
         _ = Poll.restore(data['polls'])
         _ = Vote.restore(data['votes'])
-        _ = TeamMember.restore(data['team_members'])
         _ = Chat.restore(data['chat'])
         # _ = Player.restore(data['player'])
-        _ = TopInterest.restore(data['top_interests'])
         _ = Language.restore(data['languages'])
     print("Data restored to the new database.")
 
@@ -436,6 +432,6 @@ app.cli.add_command(custom_cli)
 # this runs the flask application on the development server
 if __name__ == "__main__":
     # Start the border checker in background
-    start_checker()
+    ##start_checker()
     # change name for testing
     app.run(debug=True, host="0.0.0.0", port="3167")
