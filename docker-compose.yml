@@ -3,7 +3,7 @@ services:
   web:
     image: crosswise
     build: .
-    command: gunicorn main:app --bind 0.0.0.0:3167 --workers 1 --timeout 120
+    command: gunicorn main:app --bind 0.0.0.0:3167 --workers 1 --timeout 240
     env_file:
       - .env
     ports:
