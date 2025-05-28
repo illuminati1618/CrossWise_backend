@@ -75,34 +75,27 @@ class UserAPI:
         """
 
         def post(self):
-            """
-            Create a new user.
-            """
             body = request.get_json()
-
-            # Validate name
             name = body.get('name')
             if name is None or len(name) < 2:
                 return {'message': 'Name is missing, or is less than 2 characters'}, 400
 
-            # Validate uid
             uid = body.get('uid')
             if uid is None or len(uid) < 2:
                 return {'message': 'User ID is missing, or is less than 2 characters'}, 400
 
+            email = body.get('email', '')   # Optional
+            phone = body.get('phone', '')   # Optional
             followers = body.get('followers', '')
-            if not isinstance(followers, str):
-                return {'message': 'Followers must be a string'}, 400
 
-            # Setup minimal USER OBJECT
-            user_obj = User(name=name, uid=uid, followers=followers)
+            user_obj = User(name=name, uid=uid, email=email, phone=phone, followers=followers)
 
-            # Add user to database
-            user = user_obj.create(body)  # pass the body elements to be saved in the database
-            if not user:  # failure returns error message
+            user = user_obj.create(body)
+            if not user:
                 return {'message': f'Processed {name}, either a format error or User ID {uid} is duplicate'}, 400
 
             return jsonify(user.read())
+
         
         @token_required()
         def get(self):

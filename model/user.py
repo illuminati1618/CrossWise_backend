@@ -50,23 +50,24 @@ class User(db.Model, UserMixin):
         _pfp (Column): A string representing the path to the user's profile picture. It can be null.
     """
     __tablename__ = 'users'
-
+    
     id = db.Column(db.Integer, primary_key=True)
     _name = db.Column(db.String(255), unique=False, nullable=False)
     _uid = db.Column(db.String(255), unique=True, nullable=False)
-    _email = db.Column(db.String(255), unique=False, nullable=False)
+    _email = db.Column(db.String(255), unique=False, nullable=True)   # was nullable=False, now allow blank
+    _phone = db.Column(db.String(20), unique=False, nullable=True)    # <-- ADD THIS LINE
     _password = db.Column(db.String(255), unique=False, nullable=False)
     _role = db.Column(db.String(20), default="User", nullable=False)
     _pfp = db.Column(db.String(255), unique=False, nullable=True)
     _car = db.Column(db.String(255), unique=False, nullable=True)
-    _interests = db.Column(db.String(255), unique=False, nullable=True)  # New field added here
-    _followers = db.Column(db.String(255), unique=False, nullable=True)  # New field added here
-    _facial_data = db.Column(db.Text, nullable=True)  # For storing facial embedding as JSON
+    _followers = db.Column(db.String(255), unique=False, nullable=True)
+    _facial_data = db.Column(db.Text, nullable=True)
+    posts = db.relationship('Post', backref='author', lazy=True)
 
     posts = db.relationship('Post', backref='author', lazy=True)
                                  
     
-    def __init__(self, name, uid, password="", role="User", pfp='', car='', email='?', interests='', followers=''):
+    def __init__(self, name, uid, password="", role="User", pfp='', car='', email='', phone='', followers=''):
         """
         Constructor, 1st step in object creation.
         
@@ -76,27 +77,19 @@ class User(db.Model, UserMixin):
             password (str): The password for the user.
             role (str): The role of the user within the application. Defaults to "User".
             pfp (str): The path to the user's profile picture. Defaults to an empty string.
-            interests (str): The user's interests. Defaults to an empty string.
+            phone (str): The phone number of the user. Defaults to an empty string.
+            email (str): The email address of the user. Defaults to an empty string.
             followers (str): The user's followers. Defaults to an empty string.
         """
         self._name = name
         self._uid = uid
         self._email = email
+        self._phone = phone  # NEW
         self.set_password(password)
         self._role = role
         self._pfp = pfp
         self._car = car
-        self._interests = interests
         self._followers = followers
-    @property
-    def interests(self):
-        """
-        Gets the user's interests.
-        
-        Returns:
-            str: The user's interests. Seperatred by commas.
-        """
-        return self._interests
 
     @property
     def followers(self):
@@ -108,18 +101,14 @@ class User(db.Model, UserMixin):
         """
         return self._followers
 
-    @interests.setter
-    def interests(self, interests):
-        """
-        Sets the user's interests.
-        
-        Args:
-            interests (str): The new interests for the user.
-        """
-        if isinstance(interests, str):
-            self._interests = interests
-        else:
-            self._interests = ""
+    @property
+    def phone(self):
+        return self._phone
+
+    @phone.setter
+    def phone(self, phone):
+        self._phone = phone
+
     @property
     def facial_data(self):
         return self._facial_data
@@ -394,24 +383,15 @@ class User(db.Model, UserMixin):
             "uid": self.uid,
             "name": self.name,
             "email": self.email,
+            "phone": self.phone,  # NEW
             "role": self._role,
             "pfp": self._pfp,
             "car": self._car,
-            "interests": self._interests,  # Include interests in the dictionary
             "followers": self._followers  # Include followers in the dictionary
         }
         return data
-        
+            
     def update(self, inputs):
-        """
-        Updates the user object with new data.
-        
-        Args:
-            inputs (dict): A dictionary containing the new data for the user.
-        
-        Returns:
-            User: The updated user object, or None on error.
-        """
         if not isinstance(inputs, dict):
             return self
 
@@ -419,10 +399,10 @@ class User(db.Model, UserMixin):
         uid = inputs.get("uid", "")
         password = inputs.get("password", "")
         pfp = inputs.get("pfp", None)
-        interests = inputs.get("interests", None)
+        phone = inputs.get("phone", None)   # NEW
         followers = inputs.get("followers", None)
+        email = inputs.get("email", None)   # NEW
 
-        # Update table with new data
         if name:
             self.name = name
         if uid:
@@ -431,13 +411,14 @@ class User(db.Model, UserMixin):
             self.set_password(password)
         if pfp is not None:
             self.pfp = pfp
-        if interests is not None:
-            self.interests = interests
+        if phone is not None:
+            self.phone = phone   # NEW
+        if email is not None:
+            self.email = email   # NEW
         if followers is not None:
             self.followers = followers
 
-        # Check this on each update
-        self.set_email()
+        # self.set_email()  # <--- DELETE OR COMMENT THIS LINE OUT!
 
         try:
             db.session.commit()
@@ -445,6 +426,7 @@ class User(db.Model, UserMixin):
             db.session.rollback()
             return None
         return self
+
     
     def delete(self):
         """
@@ -581,7 +563,6 @@ def initUsers():
                 pfp='toby.png',
                 car='toby_car.png',
                 role="Admin",
-                interests="Inventing, Reading, Physics",
                 followers="niko, bobby"
             ),
             User(
@@ -589,7 +570,6 @@ def initUsers():
                 uid=app.config['DEFAULT_USER'],
                 password=app.config['DEFAULT_PASSWORD'],
                 pfp='hop.png',
-                interests="Inventing, Reading, Physics",
                 followers="niko"
             ),
             User(
@@ -597,7 +577,6 @@ def initUsers():
                 uid='niko',
                 password='123niko',
                 pfp='niko.png',
-                interests="Electrical Engineering, Innovation, Nature, Inventing"
             ),
             User(
                 name='Bobby Bapat',
@@ -609,93 +588,13 @@ def initUsers():
                 name='Random Chatroom',
                 uid=app.config['ADMIN_USER'],
                 password='password',
-                interests="Soccer, Physics",
                 followers="bobby"
             ),
             User(
                 name='Albert Einstein',
                 uid='einstein',
                 password='e=mc2',
-                interests="Physics, Mathematics, Nature"
             ),
-            User(
-                name='Marie Curie',
-                uid='curie',
-                password='radium123',
-                interests="Chemistry, Physics, Research"
-            ),
-            User(
-                name='Alan Turing',
-                uid='turing',
-                password='enigma1942',
-                interests="Mathematics, Programming, Cryptography"
-            ),
-            User(
-                name='Ada Lovelace',
-                uid='ada',
-                password='lovelace99',
-                interests="Mathematics, Programming, Algorithms"
-            ),
-            User(
-                name='Galileo Galilei',
-                uid='galileo',
-                password='stars123',
-                interests="Astronomy, Physics, Invention"
-            ),
-            User(
-                name='Leonardo Da Vinci',
-                uid='davinci',
-                password='monaLisa',
-                interests="Art, Innovation, Anatomy, Nature"
-            ),
-            User(
-                name='Isaac Newton',
-                uid='newton',
-                password='applefall',
-                interests="Physics, Mathematics, Nature, Inventing"
-            ),
-            User(
-                name='Katherine Johnson',
-                uid='kjohnson',
-                password='apollo11',
-                interests="Mathematics, Programming, Aerospace"
-            ),
-            User(
-                name='Charles Darwin',
-                uid='darwin',
-                password='evolution123',
-                interests="Nature, Biology, Research, Writing"
-            ),
-            User(
-                name='Carl Sagan',
-                uid='sagan',
-                password='cosmos42',
-                interests="Astronomy, Physics, Writing"
-            ),
-            User(
-                name='Rosalind Franklin',
-                uid='rosalind',
-                password='dna1952',
-                interests="Chemistry, Biology, Research"
-            ),
-            User(
-                name='Alexander Graham Bell',
-                uid='bell',
-                password='phone1876',
-                interests="Invention, Communication, Physics"
-            ),
-            User(
-                name='John von Neumann',
-                uid='neumann',
-                password='gameTheory1',
-                interests="Mathematics, Programming, Cryptography, Algorithms"
-            ),
-            User(
-                name='Rachel Carson',
-                uid='carson',
-                password='silentSpring',
-                interests="Nature, Writing, Environmental Science"
-            )
         ]
 
         
