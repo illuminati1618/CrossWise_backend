@@ -65,7 +65,12 @@ class BorderAPI:
             else:
                 day_map = {6: 6, 0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5}
                 values["day"] = day_map[data["day"]]
-            
+
+            if "month" not in data:
+                current_month = datetime.now().strftime('%B').lower()
+                values["month"] = current_month
+            else:
+                values["month"] = data["month"]
 
             if "time" not in data:
                 current_hour = datetime.now().hour  # already in 24-hour format
@@ -75,10 +80,10 @@ class BorderAPI:
 
             if values["mode"] == "long_term":
                 borderModel = BorderWaitTimeModel.get_instance()
-                response = borderModel.predict({"bwt_day": values["day"], "time_slot": values["time"]})
+                response = borderModel.predict({"bwt_day": values["day"], "time_slot": values["time"], "month": values["month"]})
 
                 return jsonify({
-                    "time": math.trunc((response["linear_model_prediction"] + response["tree_model_prediction"]) / 2),
+                    "time": math.trunc((response["random_forest_prediction"] + response["tree_model_prediction"]) / 2),
                 })
             else:
                 response = requests.get("https://bwt.cbp.gov/api/bwtwaittimegraph/09250401/2025-05-27")
