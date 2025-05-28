@@ -25,10 +25,10 @@ instance/volumes/
 instance/volumes/*
 instance/data.json
 instance/data.json.*.bak
+instance/border_notifications.db
 
 # Ignore specific database files
 instance/volumes/user_management.db
-instance/volumes/user_management_bak.db
-
+instance/border_notifications.db
 # Ignore all videos
 data/*
