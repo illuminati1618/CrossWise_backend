@@ -2,7 +2,7 @@ import os
 import requests
 from dotenv import load_dotenv
 from model.twitter import BorderTweet
-from flask import current_app
+from __init__ import app
 
 # Load environment variables
 load_dotenv(dotenv_path='instance/.env')
