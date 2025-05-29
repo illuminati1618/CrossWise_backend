@@ -22,7 +22,7 @@ class BorderFeedbackAPI:
                 data = request.get_json()
                 
                 # Validate required fields
-                required_fields = ['time_cross', 'time_diff']
+                required_fields = ['time_cross', 'time_diff', 'time_taken']
                 for field in required_fields:
                     if field not in data:
                         return {"error": f"Missing required field: {field}"}, 400
@@ -39,6 +39,14 @@ class BorderFeedbackAPI:
                 except ValueError:
                     return {"error": "time_diff must be a number"}, 400
                 
+                # Validate time_taken
+                try:
+                    time_taken = float(data['time_taken'])
+                    if time_taken < 0:
+                        return {"error": "time_taken cannot be negative"}, 400
+                except ValueError:
+                    return {"error": "time_taken must be a number"}, 400
+                
                 # Get optional user message
                 user_message = data.get('user_message', '')
                 
@@ -46,6 +54,7 @@ class BorderFeedbackAPI:
                 feedback = BorderFeedback(
                     time_cross=time_cross,
                     time_diff=time_diff,
+                    time_taken=time_taken,
                     user_message=user_message
                 )
                 
