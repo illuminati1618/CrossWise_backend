@@ -12,7 +12,7 @@ import shutil
 from functools import wraps
 import requests
 from api.border_checker import start_checker  # Import the border checker
-from api.twitter_scraper import run_border_queries
+from api.twitter_search import run_border_queries
 import threading
 
 # import "objects" from "this" project
@@ -102,6 +102,7 @@ app.register_blueprint(sms_api)
 app.register_blueprint(border_feedback_api)
 app.register_blueprint(traffic_report_api)
 app.register_blueprint(contact_api)
+app.register_blueprint(run_border_queries)
 # Tell Flask-Login the view function name of your login route
 login_manager.login_view = "login"
 
