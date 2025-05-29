@@ -12,6 +12,7 @@ BEARER_TOKEN = os.getenv("TWITTER_BEARER_TOKEN")
 SEARCH_URL = "https://api.twitter.com/2/tweets/search/recent"
 HEADERS = {"Authorization": f"Bearer {BEARER_TOKEN}"}
 
+
 def search_tweets(query="Otay Mesa border wait", max_results=10):
     params = {
         "query": query,
@@ -23,31 +24,48 @@ def search_tweets(query="Otay Mesa border wait", max_results=10):
         raise Exception(f"Twitter API error {response.status_code}: {response.text}")
     return response.json().get("data", [])
 
+
 def run_border_queries():
-    print("🔍 Scraping Twitter for border-related keywords...\n")
+    print("\n📡 [TwitterScraper] Starting scrape of border-related tweets...\n")
+
     keywords = [
-        "Otay Mesa border wait", 
-        "San Ysidro crossing delay", 
-        "Tijuana border crossing", 
-        "Otay line long", 
+        "Otay Mesa border wait",
+        "San Ysidro crossing delay",
+        "Tijuana border crossing",
+        "Otay line long",
         "crossed San Ysidro today"
     ]
 
     with current_app.app_context():
         for query in keywords:
-            print(f"\n🔎 Query: {query}")
+            print(f"🔎 [QUERY] {query}")
             try:
                 tweets = search_tweets(query=query, max_results=10)
+
+                if not tweets:
+                    print("   ⚠️  No tweets found.")
+
                 for tweet in tweets:
-                    print(f"@{tweet['author_id']} [{tweet['created_at']}]: {tweet['text'][:120]}...")
+                    tweet_id = tweet['id']
+                    existing = BorderTweet.query.filter_by(tweet_id=tweet_id).first()
+                    if existing:
+                        print(f"   🔁 Already exists: {tweet_id}")
+                        continue
+
+                    print(f"   🐦 @{tweet['author_id']} | {tweet['created_at']} → {tweet['text'][:100]}...")
+                    
                     tweet_obj = BorderTweet(
                         tweet_id=tweet['id'],
                         author_id=tweet['author_id'],
                         created_at=tweet['created_at'],
                         query=query,
                         text=tweet['text'],
-                        score=None  # Placeholder for Gemini score later
+                        score=None
                     )
                     tweet_obj.save()
+                    print(f"   ✅ Saved to DB: {tweet_id}")
+
             except Exception as e:
-                print(f"❌ Failed on query '{query}': {e}")
+                print(f"   ❌ Error fetching tweets for '{query}': {e}")
+    
+    print("\n✅ [TwitterScraper] Scrape complete.\n")

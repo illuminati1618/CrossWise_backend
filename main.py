@@ -12,8 +12,6 @@ import shutil
 from functools import wraps
 import requests
 from api.border_checker import start_checker  # Import the border checker
-from api.twitter_search import run_border_queries
-import threading
 
 # import "objects" from "this" project
 from __init__ import app, db, login_manager  # Key Flask objects 
@@ -61,7 +59,6 @@ from model.chat import Chat, initChats
 from model.help_request import HelpRequest, initHelpRequests
 from model.timelapse import TimelapseModel
 from model.facial_encoding import FacialEncoding5c
-from model.twitter import BorderTweet
 
 
 from model.topusers import TopUser
@@ -102,7 +99,6 @@ app.register_blueprint(sms_api)
 app.register_blueprint(border_feedback_api)
 app.register_blueprint(traffic_report_api)
 app.register_blueprint(contact_api)
-
 # Tell Flask-Login the view function name of your login route
 login_manager.login_view = "login"
 
@@ -436,9 +432,13 @@ app.cli.add_command(custom_cli)
         
 # this runs the flask application on the development server
 if __name__ == "__main__":
-    
-    # Optionally start your other background tasks
-    # start_checker()
+    # Start Twitter scraper in background
+    def twitter_scraper_thread():
+        with app.app_context():
+            print("🚀 [Startup] Running Twitter scraper background task...")
+            run_border_queries()
+            print("✅ [Startup] Twitter scrape completed.")
 
-    # Start Flask app
+    threading.Thread(target=twitter_scraper_thread).start()
+
     app.run(debug=True, host="0.0.0.0", port="3167")
