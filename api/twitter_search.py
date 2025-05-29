@@ -29,18 +29,15 @@ def run_border_queries():
     print("\n📡 [TwitterScraper] Starting scrape of border-related tweets...\n")
 
     keywords = [
-        "Otay Mesa border wait",
-        "San Ysidro crossing delay",
-        "Tijuana border crossing",
-        "Otay line long",
-        "crossed San Ysidro today"
-    ]
+    "Otay Mesa border wait"  # Limit to 1 query to stay within quota
+]
+
 
     with current_app.app_context():
         for query in keywords:
             print(f"🔎 [QUERY] {query}")
             try:
-                tweets = search_tweets(query=query, max_results=10)
+                tweets = search_tweets(query=query, max_results=1)
 
                 if not tweets:
                     print("   ⚠️  No tweets found.")
