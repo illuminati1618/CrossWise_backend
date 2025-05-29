@@ -102,7 +102,7 @@ app.register_blueprint(sms_api)
 app.register_blueprint(border_feedback_api)
 app.register_blueprint(traffic_report_api)
 app.register_blueprint(contact_api)
-app.register_blueprint(run_border_queries)
+
 # Tell Flask-Login the view function name of your login route
 login_manager.login_view = "login"
 
