@@ -12,6 +12,8 @@ import shutil
 from functools import wraps
 import requests
 from api.border_checker import start_checker  # Import the border checker
+from api.twitter_scraper import run_border_queries
+import threading
 
 # import "objects" from "this" project
 from __init__ import app, db, login_manager  # Key Flask objects 
@@ -437,7 +439,16 @@ app.cli.add_command(custom_cli)
         
 # this runs the flask application on the development server
 if __name__ == "__main__":
-    # Start the border checker in background
-    ##start_checker()
-    # change name for testing
+    # Start Twitter scraper in background
+    def twitter_scraper_thread():
+        with app.app_context():
+            print("📡 Running Twitter scraper at startup...")
+            run_border_queries()
+
+    threading.Thread(target=twitter_scraper_thread).start()
+
+    # Optionally start your other background tasks
+    # start_checker()
+
+    # Start Flask app
     app.run(debug=True, host="0.0.0.0", port="3167")
