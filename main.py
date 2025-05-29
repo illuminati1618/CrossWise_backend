@@ -12,7 +12,7 @@ import shutil
 from functools import wraps
 import requests
 from api.border_checker import start_checker  # Import the border checker
-
+import threading
 # import "objects" from "this" project
 from __init__ import app, db, login_manager  # Key Flask objects 
 # API endpoints
@@ -43,6 +43,7 @@ from api.weather_api import weather_api
 from api.traffic_report import traffic_report_api
 from api.border_feedback import border_feedback_api
 from api.contact import contact_api
+from api.twitter_scraper import run_border_queries
 
 # database Initialization functions
 from model.user import User, initUsers
