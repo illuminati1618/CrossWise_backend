@@ -59,6 +59,7 @@ from model.chat import Chat, initChats
 from model.help_request import HelpRequest, initHelpRequests
 from model.timelapse import TimelapseModel
 from model.facial_encoding import FacialEncoding5c
+from model.twitter import BorderTweet
 
 
 from model.topusers import TopUser
@@ -355,7 +356,12 @@ def generate_data():
     initPolls()
     initHelpRequests()
     initTrafficReports()
-    
+
+@custom_cli.command('scrape_twitter')
+def scrape_twitter():
+    from api.twitter_scraper import run_border_queries
+    run_border_queries()
+
 # Backup the old database
 def backup_database(db_uri, backup_uri):
     """Backup the current database."""
