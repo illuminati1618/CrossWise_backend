@@ -32,7 +32,7 @@ keywords = [
 ]
 
 
-    with current_app.app_context():
+with current_app.app_context():
         for query in keywords:
             print(f"\n🔎 Query: {query}")
             try:
