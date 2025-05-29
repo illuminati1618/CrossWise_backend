@@ -360,10 +360,6 @@ def generate_data():
     initHelpRequests()
     initTrafficReports()
 
-@custom_cli.command('scrape_twitter')
-def scrape_twitter():
-    from api.twitter_scraper import run_border_queries
-    run_border_queries()
 
 # Backup the old database
 def backup_database(db_uri, backup_uri):
@@ -440,14 +436,7 @@ app.cli.add_command(custom_cli)
         
 # this runs the flask application on the development server
 if __name__ == "__main__":
-    # Start Twitter scraper in background
-    def twitter_scraper_thread():
-        with app.app_context():
-            print("📡 Running Twitter scraper at startup...")
-            run_border_queries()
-
-    threading.Thread(target=twitter_scraper_thread).start()
-
+    
     # Optionally start your other background tasks
     # start_checker()
 
