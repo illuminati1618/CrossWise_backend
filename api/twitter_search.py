@@ -25,10 +25,6 @@ def search_tweets(query="Otay Mesa border wait", max_results=1):
 
 keywords = [
     "Otay Mesa border wait", 
-    "San Ysidro crossing delay", 
-    "Tijuana border crossing", 
-    "Otay line long", 
-    "crossed San Ysidro today"
 ]
 
 
@@ -36,7 +32,7 @@ with current_app.app_context():
         for query in keywords:
             print(f"\n🔎 Query: {query}")
             try:
-                tweets = search_tweets(query=query, max_results=10)
+                tweets = search_tweets(query=query, max_results=1)
                 for tweet in tweets:
                     print(f"@{tweet['author_id']} [{tweet['created_at']}]: {tweet['text'][:120]}...")
                     tweet_obj = BorderTweet(
