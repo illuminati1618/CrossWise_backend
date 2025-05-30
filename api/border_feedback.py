@@ -21,8 +21,8 @@ class BorderFeedbackAPI:
             try:
                 data = request.get_json()
                 
-                # Validate required fields
-                required_fields = ['time_cross', 'time_diff', 'time_taken']
+                # Validate required fields - all 4 fields user must fill out
+                required_fields = ['time_cross', 'time_taken', 'time_diff', 'user_message']
                 for field in required_fields:
                     if field not in data:
                         return {"error": f"Missing required field: {field}"}, 400
@@ -47,14 +47,16 @@ class BorderFeedbackAPI:
                 except ValueError:
                     return {"error": "time_taken must be a number"}, 400
                 
-                # Get optional user message
+                # Get user message (now required)
                 user_message = data.get('user_message', '')
+                if not user_message.strip():
+                    return {"error": "user_message cannot be empty"}, 400
                 
-                # Create and save the feedback
+                # Create and save the feedback with all 4 fields
                 feedback = BorderFeedback(
                     time_cross=time_cross,
-                    time_diff=time_diff,
                     time_taken=time_taken,
+                    time_diff=time_diff,
                     user_message=user_message
                 )
                 
