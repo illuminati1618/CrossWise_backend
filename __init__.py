@@ -22,7 +22,8 @@ login_manager.init_app(app)
 cors = CORS(app, supports_credentials=True, origins=[
     'http://localhost:4887',
     'http://127.0.0.1:4887',
-    'https://illuminati1618.github.io'
+    'https://illuminati1618.github.io',
+    'https://open-coding-society.github.io'
 ])
 
 # System Defaults
