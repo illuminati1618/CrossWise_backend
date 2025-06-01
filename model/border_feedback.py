@@ -13,8 +13,8 @@ class BorderFeedback(db.Model):
     Attributes:
         id (db.Column): The primary key, an integer representing the unique identifier for the feedback.
         _time_cross (db.Column): Timestamp when the user crossed the border.
-        _time_diff (db.Column): Difference between estimated and actual wait time (minutes).
         _time_taken (db.Column): Actual time it took to cross the border (minutes).
+        _time_diff (db.Column): Difference between estimated and actual wait time (minutes).
         _user_message (db.Column): User's message about their crossing experience.
         _created_at (db.Column): Timestamp when the feedback was submitted.
     """
@@ -22,24 +22,24 @@ class BorderFeedback(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     _time_cross = db.Column(db.DateTime, nullable=False)
-    _time_diff = db.Column(db.Float, nullable=False)
     _time_taken = db.Column(db.Float, nullable=False)
-    _user_message = db.Column(db.Text, nullable=True)
+    _time_diff = db.Column(db.Float, nullable=False)
+    _user_message = db.Column(db.Text, nullable=False)
     _created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def __init__(self, time_cross, time_diff, time_taken, user_message=""):
+    def __init__(self, time_cross, time_taken, time_diff, user_message):
         """
         Constructor, 1st step in object creation.
         
         Args:
             time_cross (datetime): When the user crossed the border.
-            time_diff (float): Difference between estimated and actual wait time in minutes.
             time_taken (float): Actual time it took to cross the border in minutes.
-            user_message (str): Optional message about the experience.
+            time_diff (float): Difference between estimated and actual wait time in minutes.
+            user_message (str): Required message about the experience.
         """
         self._time_cross = time_cross
-        self._time_diff = time_diff
         self._time_taken = time_taken
+        self._time_diff = time_diff
         self._user_message = user_message
 
     def __repr__(self):
@@ -49,7 +49,7 @@ class BorderFeedback(db.Model):
         Returns:
             str: A text representation of the object.
         """
-        return f"BorderFeedback(id={self.id}, time_cross={self._time_cross}, time_diff={self._time_diff}, time_taken={self._time_taken})"
+        return f"BorderFeedback(id={self.id}, time_cross={self._time_cross}, time_taken={self._time_taken}, time_diff={self._time_diff})"
     
     def create(self):
         """
@@ -77,8 +77,8 @@ class BorderFeedback(db.Model):
         return {
             "id": self.id,
             "time_cross": self._time_cross.isoformat() if self._time_cross else None,
-            "time_diff": self._time_diff,
             "time_taken": self._time_taken,
+            "time_diff": self._time_diff,
             "user_message": self._user_message,
             "created_at": self._created_at.isoformat() if self._created_at else None
         }
@@ -95,10 +95,10 @@ class BorderFeedback(db.Model):
         """
         if 'time_cross' in data and data['time_cross']:
             self._time_cross = data['time_cross']
-        if 'time_diff' in data and data['time_diff'] is not None:
-            self._time_diff = data['time_diff']
         if 'time_taken' in data and data['time_taken'] is not None:
             self._time_taken = data['time_taken']
+        if 'time_diff' in data and data['time_diff'] is not None:
+            self._time_diff = data['time_diff']
         if 'user_message' in data:
             self._user_message = data['user_message']
             
